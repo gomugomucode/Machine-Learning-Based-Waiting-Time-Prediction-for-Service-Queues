@@ -1,0 +1,77 @@
+{
+  "best_model_name": "Ridge Regression",
+  "version": "1.0.0",
+  "trained_at": "2026-09-27T21:09:21.437886",
+  "target": "wait_time",
+  "features": [
+    "queue_length",
+    "hour",
+    "minute_of_day",
+    "minutes_since_0900",
+    "day_of_week",
+    "hour_sin",
+    "hour_cos"
+  ],
+  "training_samples": 7975,
+  "test_samples": 4042,
+  "train_dates": [
+    "2026-10-05",
+    "2026-10-06",
+    "2026-10-07",
+    "2026-10-08",
+    "2026-10-09",
+    "2026-10-12",
+    "2026-10-13",
+    "2026-10-14",
+    "2026-10-15",
+    "2026-10-16"
+  ],
+  "test_dates": [
+    "2026-10-19",
+    "2026-10-20",
+    "2026-10-21",
+    "2026-10-22"
+  ],
+  "optimal_metrics": {
+    "test_mae_minutes": 15.16,
+    "test_rmse_minutes": 19.87,
+    "test_r2_score": 0.9073
+  },
+  "all_model_benchmarks": [
+    {
+      "model_name": "Naive Mean Baseline",
+      "train_mae": 56.24,
+      "test_mae": 55.74,
+      "test_rmse": 65.47,
+      "test_r2": -0.0066
+    },
+    {
+      "model_name": "Multiple Linear Regression",
+      "train_mae": 11.47,
+      "test_mae": 15.21,
+      "test_rmse": 19.94,
+      "test_r2": 0.9066
+    },
+    {
+      "model_name": "Ridge Regression",
+      "train_mae": 11.48,
+      "test_mae": 15.16,
+      "test_rmse": 19.87,
+      "test_r2": 0.9073
+    },
+    {
+      "model_name": "Random Forest Regressor",
+      "train_mae": 1.65,
+      "test_mae": 16.95,
+      "test_rmse": 22.18,
+      "test_r2": 0.8845
+    },
+    {
+      "model_name": "Gradient Boosting Regressor",
+      "train_mae": 3.42,
+      "test_mae": 16.8,
+      "test_rmse": 22.05,
+      "test_r2": 0.8858
+    }
+  ]
+}

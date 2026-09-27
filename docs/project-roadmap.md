@@ -11,8 +11,8 @@
 | Phase | Phase Name | Focus Area | Status | Documentation Link |
 | :---: | :--- | :--- | :---: | :--- |
 | **Phase 1** | **Application Foundation & Data Inspection** | Project structure, PostgreSQL, Django DRF, React Vite SPA, Kaggle dataset verification | <span style="color:green;font-weight:bold;">🟢 COMPLETED</span> | [`docs/phases/phase-01-foundation-and-inspection.md`](phases/phase-01-foundation-and-inspection.md) |
-| **Phase 2** | **Target Definition & Feature Engineering** | Mathematical target formulation, temporal train/test split, cyclical time & arrival features | <span style="color:blue;font-weight:bold;">🔵 NEXT PHASE</span> | Planned (`docs/phases/phase-02-target-and-features.md`) |
-| **Phase 3** | **Baseline Regressor & Model Benchmarks** | Dummy/Mean regressor, Simple Linear Regression, Ridge, Random Forest, XGBoost/LightGBM | <span style="color:gray;">⚪ PENDING</span> | Planned |
+| **Phase 2** | **Target Definition, Feature Engineering & ML Pipeline** | Mathematical target formulation, temporal train/test split, candidate benchmarking, Ridge model deployment | <span style="color:green;font-weight:bold;">🟢 COMPLETED</span> | [`docs/phases/phase-02-target-and-features.md`](phases/phase-02-target-and-features.md) |
+| **Phase 3** | **Advanced Non-Linear Models & Hyperparameter Tuning** | Decision trees, Gradient Boosting hyperparameter optimization, LightGBM/XGBoost comparison | <span style="color:blue;font-weight:bold;">🔵 NEXT PHASE</span> | Planned |
 | **Phase 4** | **Model Evaluation & Residual Analysis** | MAE, RMSE, R² comparison, time-series cross-validation, feature importance | <span style="color:gray;">⚪ PENDING</span> | Planned |
 | **Phase 5** | **ML Model Pipeline Serialization & Serving** | Model export (`joblib`), pipeline integration into `apps/predictions/` | <span style="color:gray;">⚪ PENDING</span> | Planned |
 | **Phase 6** | **Prediction Engine API Integration** | Real-time prediction endpoint `/api/predictions/predict/`, error bounds | <span style="color:gray;">⚪ PENDING</span> | Planned |

@@ -1,0 +1,1 @@
+# serialized model artifacts directory

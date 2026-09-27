@@ -6,6 +6,8 @@ import type {
   PaginatedResponse,
   DatasetSummary,
   PredictionStatus,
+  PredictionRequest,
+  PredictionResult,
   AnalyticsOverview,
   HourlyAnalyticsItem,
 } from '../types';
@@ -61,6 +63,11 @@ export const getDatasetSummary = async (): Promise<DatasetSummary> => {
 
 export const getPredictionStatus = async (): Promise<PredictionStatus> => {
   const response = await apiClient.get<PredictionStatus>('/predictions/status/');
+  return response.data;
+};
+
+export const predictWaitingTime = async (data: PredictionRequest): Promise<PredictionResult> => {
+  const response = await apiClient.post<PredictionResult>('/predictions/predict/', data);
   return response.data;
 };
 

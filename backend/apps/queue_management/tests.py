@@ -93,16 +93,25 @@ class PredictionApiTests(TestCase):
         self.client = APIClient()
 
     def test_prediction_status_endpoint(self):
-        """Test GET /api/predictions/status/ clearly indicates model offline."""
+        """Test GET /api/predictions/status/ returns online and model metadata."""
         response = self.client.get('/api/predictions/status/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.json()
-        self.assertEqual(data['status'], 'offline')
-        self.assertFalse(data['model_connected'])
+        self.assertEqual(data['status'], 'online')
+        self.assertTrue(data['model_connected'])
+        self.assertIn('metrics', data)
+        self.assertIn('test_mae_minutes', data['metrics'])
 
-    def test_prediction_inference_refusal(self):
-        """Test POST /api/predictions/predict/ refuses to generate fake predictions."""
-        response = self.client.post('/api/predictions/predict/', {'queue_length': 10}, format='json')
-        self.assertEqual(response.status_code, status.HTTP_503_SERVICE_UNAVAILABLE)
+    def test_prediction_inference_success(self):
+        """Test POST /api/predictions/predict/ executes real model inference."""
+        response = self.client.post('/api/predictions/predict/', {
+            'queue_length': 25,
+            'arrival_time': '10:30'
+        }, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.json()
-        self.assertEqual(data['status'], 'unavailable')
+        self.assertEqual(data['status'], 'success')
+        self.assertIn('predicted_wait_minutes', data)
+        self.assertGreater(data['predicted_wait_minutes'], 0)
+        self.assertIn('confidence_interval', data)
+        self.assertIn('congestion', data)

@@ -155,3 +155,41 @@ Resolve Django 404 on root path `http://127.0.0.1:8000/` by implementing an info
 ### 2. Verification
 * Query `http://127.0.0.1:8000/`: **HTTP 200 OK** with structured JSON response.
 * Django test suite `python manage.py test apps.queue_management`: **8/8 tests passed**.
+
+---
+
+## Entry 006: 2026-09-27 — Phase 2 Machine Learning Training, Benchmark Evaluation & Full-Stack Inference Deployment
+
+### Objective
+Transition from Phase 1 architectural protocol (where prediction inference was intentionally denied with HTTP 503) to an active, operational Phase 2 machine learning pipeline. Train multiple candidate regressors using a strict chronological train/test split on the 12,017 verified queue observations, select the best generalizing model (Ridge Regression), serialize it, expose live inference endpoints in Django REST Framework, and connect the React frontend interface with real-time predictions, confidence intervals, and benchmark evaluation metrics.
+
+### 1. Files Created & Modified
+* **Machine Learning Pipeline & Artifacts:**
+  * [`backend/apps/predictions/management/commands/train_model.py`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/backend/apps/predictions/management/commands/train_model.py): Implements chronological train/test split (7,975 train / 4,042 test), feature extraction (`queue_length`, `minutes_since_0900`, `is_peak_window`), and benchmarking of 5 algorithms.
+  * [`backend/apps/predictions/models/best_waiting_time_model.joblib`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/backend/apps/predictions/models/best_waiting_time_model.joblib): Serialized winning scikit-learn Ridge Regression pipeline with standard scaler.
+  * [`backend/apps/predictions/models/model_metrics.json`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/backend/apps/predictions/models/model_metrics.json): Model metadata and complete benchmark evaluation table.
+* **Backend Services & API:**
+  * [`backend/apps/predictions/services.py`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/backend/apps/predictions/services.py): Dynamic model loader with singleton caching, inference feature vector generation, and prediction computation with confidence bounds ($\pm \text{MAE}$).
+  * [`backend/apps/predictions/views.py`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/backend/apps/predictions/views.py): Implemented live `POST /api/predictions/predict/` and `GET /api/predictions/status/`.
+* **Frontend UI & API Layer:**
+  * [`frontend/src/types/index.ts`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/frontend/src/types/index.ts): Added `PredictionRequest`, `PredictionResult`, and `ModelBenchmark` interfaces.
+  * [`frontend/src/services/api.ts`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/frontend/src/services/api.ts): Exported `predictWaitingTime(data: PredictionRequest): Promise<PredictionResult>`.
+  * [`frontend/src/pages/Prediction.tsx`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/frontend/src/pages/Prediction.tsx): Connected operational form to live DRF inference, rendered real-time prediction card, confidence interval bar, feature evaluation breakdown, and candidate models comparison table.
+  * [`frontend/src/test/App.test.tsx`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/frontend/src/test/App.test.tsx): Updated test suite for live prediction flow.
+* **Phase Documentation:**
+  * [`docs/phases/phase-02-target-and-features.md`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/docs/phases/phase-02-target-and-features.md): Detailed Phase 2 dossier with target formulation, mathematical definitions, feature engineering, and model comparison table.
+  * [`docs/project-roadmap.md`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/docs/project-roadmap.md): Marked Phase 2 as completed.
+
+### 2. Candidate Model Evaluation Results (Held-Out Test Set)
+* **Naive Mean Baseline:** Test MAE = 55.74 min | $R^2$ = -0.0066
+* **Multiple Linear Regression:** Test MAE = 15.21 min | $R^2$ = 0.9066
+* **Ridge Regression (Selected):** Test MAE = **15.16 min** | $R^2$ = **0.9073** (**72.8% error reduction**)
+* **Random Forest Regressor:** Test MAE = 16.95 min | $R^2$ = 0.8845
+* **Gradient Boosting Regressor:** Test MAE = 16.80 min | $R^2$ = 0.8858
+
+### 3. Verification Commands & Results
+* `python manage.py test`: **8/8 tests passed**.
+* `npm run test`: **5/5 tests passed**.
+* `npm run build`: **0 errors, build generated cleanly**.
+* Browser Subagent Verification: Verified live inference on `http://localhost:5173/prediction` (screenshot `prediction_result_1790523010697.png`).
+

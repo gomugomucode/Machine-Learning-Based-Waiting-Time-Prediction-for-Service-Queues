@@ -50,11 +50,56 @@ export interface DatasetSummary {
   metrics: DatasetMetrics;
 }
 
+export interface ModelBenchmark {
+  model_name: string;
+  train_mae: number;
+  test_mae: number;
+  test_rmse: number;
+  test_r2: number;
+}
+
 export interface PredictionStatus {
   status: string;
   model_connected: boolean;
   version: string;
+  model_name?: string;
+  trained_at?: string;
+  training_samples?: number;
+  test_samples?: number;
+  metrics?: {
+    test_mae_minutes?: number;
+    test_rmse_minutes?: number;
+    test_r2_score?: number;
+  };
+  all_benchmarks?: ModelBenchmark[];
   message: string;
+}
+
+export interface PredictionRequest {
+  queue_length: number;
+  arrival_time?: string;
+  service_type?: number;
+  active_counters?: number;
+}
+
+export interface PredictionResult {
+  status: 'success' | 'error';
+  model_name: string;
+  predicted_wait_minutes: number;
+  confidence_interval: {
+    lower_minutes: number;
+    upper_minutes: number;
+    mae_tolerance: number;
+  };
+  congestion: {
+    level: string;
+    badge_color: 'emerald' | 'blue' | 'amber' | 'rose';
+  };
+  features_evaluated: {
+    queue_length: number;
+    arrival_time: string;
+    minutes_since_0900: number;
+  };
 }
 
 export interface AnalyticsSummary {
