@@ -116,3 +116,25 @@ Track GitHub remote repository synchronization and provide operational guidance 
 * **PostgreSQL 17.2:** Running on `127.0.0.1:5432` (Database: `bca_queue_db`).
 * **Django API:** Operational at `http://127.0.0.1:8000/api/health/`.
 * **React SPA:** Operational at `http://localhost:5173/`.
+
+---
+
+## Entry 004: 2026-09-27 — IDE PostgreSQL Extension Connection Configuration
+
+### Objective
+Document database connection parameters and provide instructions for connecting IDE/VS Code PostgreSQL database explorer extensions to the local database.
+
+### 1. Connection Parameters
+* **Host / Server:** `127.0.0.1` (or `localhost`)
+* **Port:** `5432`
+* **Database Name:** `bca_queue_db`
+* **Username:** `postgres`
+* **Password:** `postgres`
+* **SSL Mode:** `Disable` (or `false` / `allow`)
+* **Connection String (URI):** `postgresql://postgres:postgres@127.0.0.1:5432/bca_queue_db`
+
+### 2. Available Tables in `bca_queue_db`
+* `queue_management_queueobservation` (12,017 records)
+* `queue_management_servicetype` (5 records)
+* `datasets_datasetmetadata` (1 record)
+* Standard Django auth/contenttypes tables.
