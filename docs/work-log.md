@@ -265,5 +265,31 @@ The Kaggle bank dataset recorded a unified single service queue without category
 * Result: Switching from Cash Transactions to Loan Operations increases wait time by **+26.1 min (+100%)**, accurately reflecting operational reality.
 * Tests: Django (8/8 pass), Vitest (5/5 pass), Build (0 errors).
 
+---
+
+## Entry 009: 2026-09-27 — IDE Model Import Resolution via Django AppRegistry
+
+### Objective
+Eliminate IDE language server warning `Cannot find module apps.queue_management.models` in [`backend/apps/predictions/services.py`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/backend/apps/predictions/services.py) and [`backend/apps/datasets/views.py`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/backend/apps/datasets/views.py).
+
+### 1. Root Cause Analysis
+In multi-app Django architectures opened at the parent monorepo root, static relative imports like `from apps.queue_management.models import ...` can fail IDE language server path resolution if the Python language server interpreter does not automatically treat `backend/` as an active top-level package.
+
+### 2. Code Changes
+* **Safe Dynamic Model Loading:**
+  * Replaced static imports with Django's native AppRegistry:
+    ```python
+    from django.apps import apps
+    ServiceType = apps.get_model('queue_management', 'ServiceType')
+    ```
+    This completely eliminates static import path dependencies and circular import vulnerabilities while remaining 100% compliant with standard Django conventions.
+  * Updated `.vscode/settings.json` with relative, absolute, and workspace-relative paths in `python.analysis.extraPaths`.
+
+### 3. Verification
+* `python manage.py test`: **8/8 tests passed**.
+* `npm run test`: **5/5 tests passed**.
+* Verified endpoint: `POST /api/predictions/predict/` with `service_type: 1` returned HTTP 200 with `service_type_name: 'Cash Transactions'`.
+
+
 
 
