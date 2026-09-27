@@ -140,11 +140,19 @@ REST_FRAMEWORK = {
 }
 
 # CORS Configuration
-# Strictly configure allowed origins based on environment variable
+# Allow Vite frontend ports (5173, 5174, 5175, etc.) and explicit regex for local development
 frontend_url_env = os.getenv('FRONTEND_URL', 'http://localhost:5173')
 CORS_ALLOWED_ORIGINS = list({
     frontend_url_env.rstrip('/'),
     'http://localhost:5173',
     'http://127.0.0.1:5173',
+    'http://localhost:5174',
+    'http://127.0.0.1:5174',
+    'http://localhost:5175',
+    'http://127.0.0.1:5175',
 })
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^http://localhost:\d+$",
+    r"^http://127\.0\.0\.1:\d+$",
+]
 CORS_ALLOW_CREDENTIALS = True

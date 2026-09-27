@@ -193,3 +193,39 @@ Transition from Phase 1 architectural protocol (where prediction inference was i
 * `npm run build`: **0 errors, build generated cleanly**.
 * Browser Subagent Verification: Verified live inference on `http://localhost:5173/prediction` (screenshot `prediction_result_1790523010697.png`).
 
+---
+
+## Entry 007: 2026-09-27 — Multi-Port CORS Configuration, IDE Linter Resolution & Counter Capacity Dynamic Inference
+
+### Objective
+Resolve the web server connection error on alternate dev ports (`http://localhost:5174`), eliminate IDE import resolution errors in [`backend/apps/datasets/views.py`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/backend/apps/datasets/views.py), and incorporate dynamic active service counter throughput scaling into the waiting time inference pipeline and prediction interface.
+
+### 1. Root Cause Analysis
+1. **Connection Error on Port 5174:** When a second `npm run dev` was launched in terminal `26324`, Vite bound to fallback port `5174` because port `5173` was already active in the background. Django's `CORS_ALLOWED_ORIGINS` was restricted strictly to `5173`, causing browser CORS preflight rejection ("Backend Offline").
+2. **IDE Diagnostics Problem:** The IDE Python linter flagged `Cannot find module apps.queue_management.models` because the workspace root is at the project parent level rather than inside `backend/`.
+3. **Static Prediction Output Feedback:** The backend inference view originally discarded `active_counters`, so adjusting the open teller count from 4 to 1 did not dynamically scale waiting time. Additionally, the queue input was slider-only without a direct numeric text box.
+
+### 2. Code Changes
+* **Backend CORS & Configuration:**
+  * [`backend/config/settings.py`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/backend/config/settings.py): Added `http://localhost:5174`, `http://127.0.0.1:5174`, and regex pattern `r"^http://localhost:\d+$"` to `CORS_ALLOWED_ORIGINS` and `CORS_ALLOWED_ORIGIN_REGEXES`.
+  * [`.vscode/settings.json`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/.vscode/settings.json): Added `backend` to `python.analysis.extraPaths` and `python.autoComplete.extraPaths`.
+* **Dynamic Capacity Inference:**
+  * [`backend/apps/predictions/services.py`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/backend/apps/predictions/services.py): Implemented multi-server queue capacity scaling based on Little's Law ($c_{\text{baseline}} / c_{\text{active}}$, baseline $c_0 = 4$ counters). Dynamically scales base regression output and MAE error bounds.
+  * [`backend/apps/predictions/views.py`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/backend/apps/predictions/views.py): Extracted `active_counters` from request payload and forwarded to service layer.
+* **Frontend UI & Type Enhancements:**
+  * [`frontend/src/types/index.ts`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/frontend/src/types/index.ts): Updated `PredictionResult.features_evaluated` to include `active_counters` and `capacity_multiplier`.
+  * [`frontend/src/pages/Prediction.tsx`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/frontend/src/pages/Prediction.tsx):
+    * Added numeric input field synced bidirectionally with the queue length slider.
+    * Updated Active Counters note explaining operational capacity scaling.
+    * Expanded model feature vector display to 4 cards showing queue depth, active tellers with capacity factor, arrival window, and diurnal progress.
+
+### 3. Verification Commands & Results
+* `python manage.py test`: **8/8 tests passed**.
+* `npm run test`: **5/5 tests passed**.
+* `npm run build`: **0 errors**.
+* Subagent Browser Verification on `http://localhost:5174/prediction`:
+  * Scenario 1 (50 queue, 1 counter): Estimated wait time = **183.5 min** (**Severe Congestion**, 4.0x load multiplier).
+  * Scenario 2 (15 queue, 4 counters): Estimated wait time = **24.6 min** (**Moderate Wait**, 1.0x baseline).
+  * Screenshot verified: `dynamic_prediction_result_1790523724136.png`.
+
+

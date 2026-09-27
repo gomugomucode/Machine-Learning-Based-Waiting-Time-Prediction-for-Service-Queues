@@ -60,12 +60,19 @@ class PredictWaitingTimeView(APIView):
         # Day of week (0=Mon, 4=Fri)
         day_of_week = int(data.get('day_of_week', 1))
 
+        # Active service counters (defaults to baseline 4)
+        try:
+            active_counters = max(1, min(20, int(data.get('active_counters', 4))))
+        except (ValueError, TypeError):
+            active_counters = 4
+
         try:
             result = service.predict(
                 queue_length=queue_length,
                 hour=hour,
                 minute=minute,
-                day_of_week=day_of_week
+                day_of_week=day_of_week,
+                active_counters=active_counters
             )
             return Response(result, status=status.HTTP_200_OK)
         except Exception as e:

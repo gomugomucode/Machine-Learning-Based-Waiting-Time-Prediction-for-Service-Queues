@@ -148,16 +148,28 @@ export const Prediction: React.FC = () => {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Input 1: Queue Length Slider */}
+              {/* Input 1: Queue Length Slider & Number Input */}
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <label htmlFor="queue-length" className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                  <label htmlFor="queue-length-input" className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
                     <Users className="h-4 w-4 text-slate-400" />
                     Observed Queue Length (Customers in line)
                   </label>
-                  <span className="text-xs font-semibold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-200/60">
-                    {queueLength} customers
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <input
+                      id="queue-length-input"
+                      type="number"
+                      min="0"
+                      max="300"
+                      value={queueLength}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value, 10);
+                        setQueueLength(isNaN(val) ? 0 : Math.max(0, Math.min(300, val)));
+                      }}
+                      className="w-20 rounded-md border border-blue-300 bg-blue-50 px-2 py-0.5 text-right text-xs font-bold text-blue-700 focus:border-blue-500 focus:outline-hidden"
+                    />
+                    <span className="text-xs font-semibold text-slate-500">people</span>
+                  </div>
                 </div>
                 <input
                   id="queue-length"
@@ -234,7 +246,7 @@ export const Prediction: React.FC = () => {
                   className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-hidden focus:ring-1 focus:ring-blue-500"
                 />
                 <p className="mt-1 text-[11px] text-slate-500">
-                  Default: 4 active tellers. Supported for future multi-counter simulation extensions.
+                  Baseline: 4 counters. Adjusting open tellers scales service capacity via Little&apos;s Law (e.g. 1 counter = 4&times; load, 8 counters = 0.5&times; load).
                 </p>
               </div>
 
@@ -321,10 +333,16 @@ export const Prediction: React.FC = () => {
                   <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
                   Model Feature Vector Evaluated
                 </h4>
-                <div className="grid grid-cols-3 gap-3 text-center">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
                   <div className="rounded-lg bg-white p-2.5 border border-slate-200/70">
                     <p className="text-[10px] text-slate-500 uppercase">Queue Depth</p>
                     <p className="text-sm font-bold text-slate-800">{result.features_evaluated.queue_length} people</p>
+                  </div>
+                  <div className="rounded-lg bg-white p-2.5 border border-slate-200/70">
+                    <p className="text-[10px] text-slate-500 uppercase">Active Counters</p>
+                    <p className="text-sm font-bold text-slate-800">
+                      {result.features_evaluated.active_counters ?? activeCounters} tellers ({result.features_evaluated.capacity_multiplier ? `${result.features_evaluated.capacity_multiplier}x` : '1.0x'})
+                    </p>
                   </div>
                   <div className="rounded-lg bg-white p-2.5 border border-slate-200/70">
                     <p className="text-[10px] text-slate-500 uppercase">Arrival Window</p>

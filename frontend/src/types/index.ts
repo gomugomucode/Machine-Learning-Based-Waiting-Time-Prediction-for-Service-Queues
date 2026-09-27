@@ -97,8 +97,10 @@ export interface PredictionResult {
   };
   features_evaluated: {
     queue_length: number;
+    active_counters?: number;
     arrival_time: string;
     minutes_since_0900: number;
+    capacity_multiplier?: number;
   };
 }
 

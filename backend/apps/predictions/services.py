@@ -73,10 +73,12 @@ class PredictionService:
         hour: int = 12,
         minute: int = 0,
         day_of_week: int = 1,
+        active_counters: int = 4,
         **kwargs
     ) -> Dict[str, Any]:
         """
-        Executes waiting time prediction using the optimal scikit-learn model.
+        Executes waiting time prediction using the optimal scikit-learn model,
+        scaled by active counter staffing capacity (multi-server queue physics).
         """
         if not self.is_available():
             raise RuntimeError("Prediction model is not loaded.")
@@ -107,7 +109,19 @@ class PredictionService:
         }])[feature_cols]
 
         raw_prediction = float(self._model.predict(input_data)[0])
-        predicted_wait = max(0.0, raw_prediction)
+        base_predicted_wait = max(0.0, raw_prediction)
+
+        # Multi-server capacity scaling:
+        # The Kaggle empirical bank dataset operated with an average baseline of 4 counters.
+        # Staffing changes scale queue clearance duration proportionally.
+        counters = max(1, min(20, int(active_counters)))
+        baseline_counters = 4
+        capacity_factor = baseline_counters / counters
+
+        if queue_length == 0:
+            predicted_wait = 0.0
+        else:
+            predicted_wait = max(0.5, base_predicted_wait * capacity_factor)
 
         # Categorize operational congestion level
         if predicted_wait < 20.0:
@@ -124,8 +138,9 @@ class PredictionService:
             congestion_color = "rose"
 
         mae = self._metrics.get("optimal_metrics", {}).get("test_mae_minutes", 15.16)
-        lower_bound = max(0.0, predicted_wait - mae)
-        upper_bound = predicted_wait + mae
+        scaled_mae = mae * capacity_factor
+        lower_bound = max(0.0, predicted_wait - scaled_mae)
+        upper_bound = predicted_wait + scaled_mae
 
         return {
             "status": "success",
@@ -134,7 +149,7 @@ class PredictionService:
             "confidence_interval": {
                 "lower_minutes": round(lower_bound, 1),
                 "upper_minutes": round(upper_bound, 1),
-                "mae_tolerance": round(mae, 1),
+                "mae_tolerance": round(scaled_mae, 1),
             },
             "congestion": {
                 "level": congestion_level,
@@ -142,7 +157,9 @@ class PredictionService:
             },
             "features_evaluated": {
                 "queue_length": queue_length,
+                "active_counters": counters,
                 "arrival_time": f"{hour:02d}:{minute:02d}",
                 "minutes_since_0900": minutes_since_0900,
+                "capacity_multiplier": round(capacity_factor, 2),
             }
         }
