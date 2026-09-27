@@ -131,7 +131,8 @@ class PredictionService:
 
         if service_type_id:
             try:
-                from apps.queue_management.models import ServiceType
+                from django.apps import apps
+                ServiceType = apps.get_model('queue_management', 'ServiceType')
                 st = ServiceType.objects.filter(id=service_type_id).first()
                 if st:
                     service_name = st.name

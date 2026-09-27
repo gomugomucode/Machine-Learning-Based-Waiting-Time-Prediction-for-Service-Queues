@@ -2,9 +2,9 @@ from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.db.models import Avg, Min, Max, Count
+from django.apps import apps
 from .models import DatasetMetadata
 from .serializers import DatasetMetadataSerializer
-from apps.queue_management.models import QueueObservation
 
 
 class DatasetMetadataViewSet(viewsets.ReadOnlyModelViewSet):
@@ -26,6 +26,7 @@ def dataset_summary(request):
     - date range
     - imported datasets count
     """
+    QueueObservation = apps.get_model('queue_management', 'QueueObservation')
     stats = QueueObservation.objects.aggregate(
         total_count=Count('id'),
         avg_wait_time=Avg('wait_time'),
