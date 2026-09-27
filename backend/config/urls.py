@@ -29,7 +29,31 @@ def health_check(request):
     }, status=http_status)
 
 
+@api_view(['GET'])
+def api_root(request):
+    """
+    Root API directory providing status and links to all available endpoints.
+    """
+    return Response({
+        "message": "Welcome to BCA Queue Waiting Time Prediction REST API",
+        "project": "Machine Learning-Based Waiting Time Prediction for Service Queues",
+        "author": "Anupam Baral",
+        "status": "online",
+        "frontend_url": "http://localhost:5173/",
+        "endpoints": {
+            "health": request.build_absolute_uri('/api/health/'),
+            "service_types": request.build_absolute_uri('/api/service-types/'),
+            "queue_observations": request.build_absolute_uri('/api/queue-observations/'),
+            "dataset_summary": request.build_absolute_uri('/api/datasets/summary/'),
+            "analytics_hourly": request.build_absolute_uri('/api/analytics/hourly/'),
+            "prediction_status": request.build_absolute_uri('/api/predictions/status/'),
+            "admin": request.build_absolute_uri('/admin/'),
+        }
+    })
+
+
 urlpatterns = [
+    path('', api_root, name='api-root'),
     path('admin/', admin.site.urls),
     path('api/health/', health_check, name='health-check'),
     path('api/', include('apps.queue_management.urls')),

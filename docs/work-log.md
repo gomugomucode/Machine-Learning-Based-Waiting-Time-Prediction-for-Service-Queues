@@ -138,3 +138,20 @@ Document database connection parameters and provide instructions for connecting 
 * `queue_management_servicetype` (5 records)
 * `datasets_datasetmetadata` (1 record)
 * Standard Django auth/contenttypes tables.
+
+---
+
+## Entry 005: 2026-09-27 — Backend Root API Index Implementation (`/`)
+
+### Objective
+Resolve Django 404 on root path `http://127.0.0.1:8000/` by implementing an informative `api_root` endpoint that provides project metadata, service status, and direct URLs to all API resources and the React frontend.
+
+### 1. Code Changes
+* [`backend/config/urls.py`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/backend/config/urls.py):
+  * Added `api_root` view decorated with `@api_view(['GET'])`.
+  * Routed `path('', api_root, name='api-root')`.
+  * Returns JSON directory with absolute URIs to all operational endpoints (`/api/health/`, `/api/service-types/`, `/api/queue-observations/`, `/api/datasets/summary/`, `/api/analytics/hourly/`, `/api/predictions/status/`, `/admin/`) and frontend URL (`http://localhost:5173/`).
+
+### 2. Verification
+* Query `http://127.0.0.1:8000/`: **HTTP 200 OK** with structured JSON response.
+* Django test suite `python manage.py test apps.queue_management`: **8/8 tests passed**.
