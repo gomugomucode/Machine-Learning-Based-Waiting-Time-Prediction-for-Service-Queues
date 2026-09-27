@@ -98,6 +98,8 @@ export interface PredictionResult {
   features_evaluated: {
     queue_length: number;
     active_counters?: number;
+    service_type_name?: string;
+    service_complexity_multiplier?: number;
     arrival_time: string;
     minutes_since_0900: number;
     capacity_multiplier?: number;

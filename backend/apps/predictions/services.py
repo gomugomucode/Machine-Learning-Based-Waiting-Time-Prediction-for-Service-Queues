@@ -118,10 +118,41 @@ class PredictionService:
         baseline_counters = 4
         capacity_factor = baseline_counters / counters
 
+        # Service category complexity scaling:
+        # Different banking service categories have varying mean transaction times:
+        # - Cash Transactions (0.85x): Fast teller operations
+        # - Account Services (1.00x): Standard baseline duration
+        # - Customer Support (1.25x): Moderate investigation/dispute
+        # - Loan Operations (1.70x): Heavy documentation/interviews
+        # - General Inquiries (0.65x): Quick routing/questions
+        service_type_id = kwargs.get('service_type_id')
+        service_name = "General Queue Service"
+        service_factor = 1.0
+
+        if service_type_id:
+            try:
+                from apps.queue_management.models import ServiceType
+                st = ServiceType.objects.filter(id=service_type_id).first()
+                if st:
+                    service_name = st.name
+                    profile_key = st.name.lower().strip()
+                    profiles = {
+                        'cash transactions': 0.85,
+                        'account services': 1.00,
+                        'customer support': 1.25,
+                        'loan operations': 1.70,
+                        'general inquiries': 0.65,
+                    }
+                    service_factor = profiles.get(profile_key, 1.0)
+            except Exception:
+                pass
+
+        total_multiplier = capacity_factor * service_factor
+
         if queue_length == 0:
             predicted_wait = 0.0
         else:
-            predicted_wait = max(0.5, base_predicted_wait * capacity_factor)
+            predicted_wait = max(0.5, base_predicted_wait * total_multiplier)
 
         # Categorize operational congestion level
         if predicted_wait < 20.0:
@@ -138,7 +169,7 @@ class PredictionService:
             congestion_color = "rose"
 
         mae = self._metrics.get("optimal_metrics", {}).get("test_mae_minutes", 15.16)
-        scaled_mae = mae * capacity_factor
+        scaled_mae = mae * total_multiplier
         lower_bound = max(0.0, predicted_wait - scaled_mae)
         upper_bound = predicted_wait + scaled_mae
 
@@ -158,6 +189,8 @@ class PredictionService:
             "features_evaluated": {
                 "queue_length": queue_length,
                 "active_counters": counters,
+                "service_type_name": service_name,
+                "service_complexity_multiplier": round(service_factor, 2),
                 "arrival_time": f"{hour:02d}:{minute:02d}",
                 "minutes_since_0900": minutes_since_0900,
                 "capacity_multiplier": round(capacity_factor, 2),

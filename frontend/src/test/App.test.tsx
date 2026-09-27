@@ -47,8 +47,12 @@ vi.spyOn(api, 'predictWaitingTime').mockResolvedValue({
   },
   features_evaluated: {
     queue_length: 25,
+    active_counters: 4,
+    service_type_name: 'Cash Transactions',
+    service_complexity_multiplier: 0.85,
     arrival_time: '11:30',
     minutes_since_0900: 150,
+    capacity_multiplier: 1.0,
   },
 });
 

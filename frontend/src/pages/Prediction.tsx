@@ -226,7 +226,18 @@ export const Prediction: React.FC = () => {
                       <option value="">General Queue Service</option>
                     )}
                   </select>
-                  <p className="mt-1 text-[11px] text-slate-500">Loaded from PostgreSQL database</p>
+                  <p className="mt-1 text-[11px] font-medium text-indigo-600">
+                    {(() => {
+                      const st = serviceTypes.find((s) => String(s.id) === selectedService);
+                      if (!st) return 'Standard branch baseline duration (1.00x)';
+                      const n = st.name.toLowerCase();
+                      if (n.includes('cash')) return '⚡ Routine teller speed (0.85x service duration)';
+                      if (n.includes('loan')) return '⏳ In-depth documentation & interview (1.70x duration)';
+                      if (n.includes('support')) return '🔍 Dispute & card resolution (1.25x duration)';
+                      if (n.includes('inquir')) return '🚀 Quick routing & token queries (0.65x duration)';
+                      return '📋 Standard branch baseline duration (1.00x)';
+                    })()}
+                  </p>
                 </div>
               </div>
 
@@ -339,18 +350,20 @@ export const Prediction: React.FC = () => {
                     <p className="text-sm font-bold text-slate-800">{result.features_evaluated.queue_length} people</p>
                   </div>
                   <div className="rounded-lg bg-white p-2.5 border border-slate-200/70">
-                    <p className="text-[10px] text-slate-500 uppercase">Active Counters</p>
+                    <p className="text-[10px] text-slate-500 uppercase">Staffing Load</p>
                     <p className="text-sm font-bold text-slate-800">
                       {result.features_evaluated.active_counters ?? activeCounters} tellers ({result.features_evaluated.capacity_multiplier ? `${result.features_evaluated.capacity_multiplier}x` : '1.0x'})
                     </p>
                   </div>
                   <div className="rounded-lg bg-white p-2.5 border border-slate-200/70">
-                    <p className="text-[10px] text-slate-500 uppercase">Arrival Window</p>
-                    <p className="text-sm font-bold text-slate-800">{result.features_evaluated.arrival_time}</p>
+                    <p className="text-[10px] text-slate-500 uppercase">Service Category</p>
+                    <p className="text-sm font-bold text-slate-800 truncate" title={result.features_evaluated.service_type_name}>
+                      {result.features_evaluated.service_type_name ?? 'General'} ({result.features_evaluated.service_complexity_multiplier ? `${result.features_evaluated.service_complexity_multiplier}x` : '1.0x'})
+                    </p>
                   </div>
                   <div className="rounded-lg bg-white p-2.5 border border-slate-200/70">
-                    <p className="text-[10px] text-slate-500 uppercase">Diurnal Progress</p>
-                    <p className="text-sm font-bold text-slate-800">+{result.features_evaluated.minutes_since_0900}m</p>
+                    <p className="text-[10px] text-slate-500 uppercase">Arrival Window</p>
+                    <p className="text-sm font-bold text-slate-800">{result.features_evaluated.arrival_time}</p>
                   </div>
                 </div>
               </div>

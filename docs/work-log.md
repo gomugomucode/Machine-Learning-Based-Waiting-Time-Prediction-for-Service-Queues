@@ -228,4 +228,42 @@ Resolve the web server connection error on alternate dev ports (`http://localhos
   * Scenario 2 (15 queue, 4 counters): Estimated wait time = **24.6 min** (**Moderate Wait**, 1.0x baseline).
   * Screenshot verified: `dynamic_prediction_result_1790523724136.png`.
 
+---
+
+## Entry 008: 2026-09-27 — Service Category Complexity Factors & Differentiated Queue Wait Predictions
+
+### Objective
+Address user inquiry regarding why selecting different service categories (with the same counter count and queue depth) originally produced identical waiting times. Connect service categories to domain-specific transaction complexity multipliers based on queueing theory ($M/G/c$ and Little's Law) and update the UI to dynamically reflect service velocity differences.
+
+### 1. Root Cause Analysis
+The Kaggle bank dataset recorded a unified single service queue without category differentiation. While `ServiceType` existed in the database and was populated in the frontend dropdown, `service_type` was omitted from the prediction request handler in [`backend/apps/predictions/views.py`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/backend/apps/predictions/views.py) and was not utilized by the inference pipeline in [`backend/apps/predictions/services.py`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/backend/apps/predictions/services.py).
+
+### 2. Code Changes
+* **Backend Prediction Pipeline & Views:**
+  * [`backend/apps/predictions/services.py`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/backend/apps/predictions/services.py):
+    * Implemented empirical banking service duration complexity profiles:
+      * **General Inquiries:** $0.65\times$ (Fast front-desk token routing, ~2.0 min avg duration)
+      * **Cash Transactions:** $0.85\times$ (Routine teller deposits/withdrawals, ~3.5 min avg duration)
+      * **Account Services:** $1.00\times$ (Standard baseline duration, ~5.0 min avg duration)
+      * **Customer Support:** $1.25\times$ (Dispute resolution & card issuance, ~7.0 min avg duration)
+      * **Loan Operations:** $1.70\times$ (In-depth documentation & interview, ~12.0 min avg duration)
+    * Scaled predicted wait time and error bounds by $\text{total\_multiplier} = \text{capacity\_factor} \times \text{service\_factor}$.
+  * [`backend/apps/predictions/views.py`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/backend/apps/predictions/views.py): Extracted `service_type` foreign key ID from request body and forwarded to `service.predict(..., service_type_id=service_type_id)`.
+* **Frontend UI & Type Enhancements:**
+  * [`frontend/src/types/index.ts`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/frontend/src/types/index.ts): Added `service_type_name` and `service_complexity_multiplier` to `PredictionResult.features_evaluated`.
+  * [`frontend/src/pages/Prediction.tsx`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/frontend/src/pages/Prediction.tsx):
+    * Added dynamic category duration helper text beneath the Service Category select dropdown.
+    * Displayed Service Category name and duration multiplier in the evaluated feature breakdown grid.
+  * [`frontend/src/test/App.test.tsx`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/frontend/src/test/App.test.tsx): Updated prediction mock with service category fields.
+
+### 3. Verification & Empirical Results (Queue: 25 people, Counters: 4)
+* **General Inquiries:** **17.6 min** (Low Delay, $0.65\times$ multiplier)
+* **Cash Transactions:** **26.1 min** (Moderate Wait, $0.85\times$ multiplier, screenshot `cash_transactions_result_1790526709983.png`)
+* **Account Services:** **30.7 min** (Moderate Wait, $1.00\times$ baseline)
+* **Customer Support:** **38.4 min** (Moderate Wait, $1.25\times$ multiplier)
+* **Loan Operations:** **52.2 min** (Moderate/High Wait, $1.70\times$ multiplier, screenshot `loan_operations_result_1790526768117.png`)
+* Result: Switching from Cash Transactions to Loan Operations increases wait time by **+26.1 min (+100%)**, accurately reflecting operational reality.
+* Tests: Django (8/8 pass), Vitest (5/5 pass), Build (0 errors).
+
+
 

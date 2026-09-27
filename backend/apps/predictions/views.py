@@ -66,13 +66,22 @@ class PredictWaitingTimeView(APIView):
         except (ValueError, TypeError):
             active_counters = 4
 
+        # Service category (optional foreign key ID)
+        service_type_id = data.get('service_type')
+        if service_type_id:
+            try:
+                service_type_id = int(service_type_id)
+            except (ValueError, TypeError):
+                service_type_id = None
+
         try:
             result = service.predict(
                 queue_length=queue_length,
                 hour=hour,
                 minute=minute,
                 day_of_week=day_of_week,
-                active_counters=active_counters
+                active_counters=active_counters,
+                service_type_id=service_type_id
             )
             return Response(result, status=status.HTTP_200_OK)
         except Exception as e:
