@@ -84,3 +84,35 @@ Resolve IDE diagnostics in [`frontend/src/test/App.test.tsx`](file:///c:/Users/A
 ### 2. Verification
 * `npm run build`: **0 errors**.
 * `npm run test`: **5/5 tests passed**.
+
+---
+
+## Entry 003: 2026-09-27 — Repository Remote Synchronization & Developer CLI Guidance
+
+### Objective
+Track GitHub remote repository synchronization and provide operational guidance for running the Django backend and Vite frontend development servers.
+
+### 1. Repository Status
+* **Remote Origin:** `https://github.com/gomugomucode/Machine-Learning-Based-Waiting-Time-Prediction-for-Service-Queues.git`
+* **Branch:** `main` (tracked with `origin/main`).
+* **Git Status:** Clean working tree.
+
+### 2. Developer Command Reference
+* **Backend Dev Server:**
+  ```powershell
+  cd backend
+  .\.venv\Scripts\activate
+  python manage.py runserver 127.0.0.1:8000
+  ```
+  *(Note: Django CLI command is `python manage.py runserver`, not `python run .\manage.py`)*
+
+* **Frontend Dev Server:**
+  ```powershell
+  cd frontend
+  npm run dev
+  ```
+
+### 3. Active System Services
+* **PostgreSQL 17.2:** Running on `127.0.0.1:5432` (Database: `bca_queue_db`).
+* **Django API:** Operational at `http://127.0.0.1:8000/api/health/`.
+* **React SPA:** Operational at `http://localhost:5173/`.
