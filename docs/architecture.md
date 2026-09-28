@@ -116,19 +116,37 @@ The backend follows clean separation of concerns:
   * `python manage.py import_dataset <filepath>`: Validates and loads records into `QueueObservation` with batch processing.
 
 ### `apps.predictions`
-* **Purpose:** Serves as the abstraction boundary for ML models.
-* **Current Phase Status:** Foundation only. **No hardcoded prediction values and no fake ML.**
-* **Future Implementation:**
-  * Model registry & artifact loader (joblib / pickle).
-  * Feature preprocessor pipeline.
-  * Real-time inference endpoint `POST /api/predictions/predict/`.
+* **Purpose:** Serves as the abstraction boundary for machine learning model inference and status telemetry.
+* **Current Status:** **Operational (Phase 3 Completed).**
+* **Implementation Details:**
+  * Memory-cached singleton `PredictionService` loading `backend/ml/artifacts/best_waiting_time_model.joblib`.
+  * Input feature formulation via reusable `ml.features.build_single_inference_vector`.
+  * Causal leakage validation via `ml.features.validate_feature_matrix`.
+  * Real-time inference endpoint `POST /api/predictions/predict/` with multi-server scaling and category complexity factors.
+  * System status endpoint `GET /api/predictions/status/` returning model connectivity, test metrics, and benchmark results.
 
 ### `apps.analytics`
-* **Purpose:** Read-only aggregations and statistical endpoints.
-* **Current Phase Status:** Placeholder endpoints and schema readiness.
-* **Future Implementation:**
-  * Average waiting time by hour of day and day of week.
-  * Queue length percentiles and peak congestion windows.
+* **Purpose:** Read-only aggregations and historical queue statistical telemetry.
+* **Current Status:** **Operational.**
+* **Implementation Details:**
+  * `GET /api/analytics/overview/`: Total observations, average wait time, average queue length, service duration.
+  * `GET /api/analytics/hourly/`: Hourly diurnal queue density and wait time averages used by frontend charts.
+
+### `backend/ml/` (Machine Learning Engine)
+* **Purpose:** Dedicated, reproducible data science and model evaluation pipeline.
+* **Modules:**
+  * `data_loader.py`: Typed dataset loader with ISO timestamp parsing.
+  * `validation.py`: 20-point data audit and target formula verification.
+  * `features.py`: Exact 10-feature schema extractor with automated leakage detection.
+  * `split.py`: Chronological train/test splitting by calendar date.
+  * `baselines.py`: Global Mean, Queue Proportional, and Hourly Mean baseline models.
+  * `train.py`: Standardized training harness for Linear Regression, Random Forest, and Gradient Boosting.
+  * `evaluate.py`: Out-of-sample benchmark evaluation harness (MAE, RMSE, R²).
+  * `explain.py`: Sliced error analysis (queue depth, diurnal period, dates) and permutation feature importance.
+  * `plots.py`: Matplotlib plotting routines generating 10 publication figures.
+  * `run_experiments.py`: Single-command reproducible runner.
+  * `artifacts/`: Serialized model binary (`best_waiting_time_model.joblib`) and metrics JSON (`model_metrics.json`).
+  * `tests/`: 11 unit and integration tests.
 
 ---
 
@@ -144,22 +162,25 @@ All API endpoints return JSON with standard HTTP status codes.
 | `GET` | `/api/queue-observations/` | List observations (with pagination and filtering) | 200 OK |
 | `GET` | `/api/queue-observations/<id>/`| Retrieve a specific queue observation record | 200 OK |
 | `GET` | `/api/datasets/summary/` | Summary of imported datasets and record counts | 200 OK |
-| `GET` | `/api/predictions/status/` | Current status of prediction engine (indicates model offline) | 200 OK |
+| `GET` | `/api/analytics/overview/` | Summary metrics: total count, wait time, queue length | 200 OK |
+| `GET` | `/api/analytics/hourly/` | Hourly queue density and wait time averages | 200 OK |
+| `GET` | `/api/predictions/status/` | Current status of prediction engine (model connected, metrics) | 200 OK |
+| `POST`| `/api/predictions/predict/` | Real-time waiting time inference from operational queue inputs | 200 OK |
 
 ---
 
 ## 6. Frontend Architecture
 
 ### State & Data Flow
-* Component-level data fetching via custom hooks (`useHealth`, `useObservations`).
-* Single source of truth API client (`src/services/api.ts`) with typed Axios promises.
+* Component-level data fetching via centralized typed Axios client (`src/services/api.ts`).
 * Clean separation between presentation components and API integration.
+* Error and boundary resilience across loading and empty states.
 
 ### Page Views
 1. **Home (`/`):** Project title, problem description, operational workflow, quick navigation links, system status indicators.
-2. **Dashboard (`/dashboard`):** Real metrics from database (total observations, average wait time, average queue length, min/max times), empty state handling when no data is loaded.
-3. **Data (`/data`):** Interactive data grid of queue observation records with pagination and metadata.
-4. **Prediction (`/prediction`):** Operational input form (queue length, arrival time, service type) with explicit disclaimer: **"Prediction module — model not yet connected. Grounded ML training in progress."**
+2. **Dashboard (`/dashboard`):** Real metrics from database (total observations, average wait time, average queue length, min/max times, hourly diurnal congestion chart).
+3. **Data (`/data`):** Interactive data grid of queue observation records with pagination and metadata browsing.
+4. **Prediction (`/prediction`):** Operational input form (queue length, arrival time, service category, active tellers) with real-time ML inference, empirical confidence interval (±MAE), and congestion severity badge.
 
 ---
 
