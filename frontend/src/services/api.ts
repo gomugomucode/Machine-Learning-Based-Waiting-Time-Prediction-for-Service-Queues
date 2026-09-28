@@ -5,9 +5,6 @@ import type {
   QueueObservation,
   PaginatedResponse,
   DatasetSummary,
-  PredictionStatus,
-  PredictionRequest,
-  PredictionResult,
   AnalyticsOverview,
   HourlyAnalyticsItem,
 } from '../types';
@@ -61,15 +58,12 @@ export const getDatasetSummary = async (): Promise<DatasetSummary> => {
   return response.data;
 };
 
-export const getPredictionStatus = async (): Promise<PredictionStatus> => {
-  const response = await apiClient.get<PredictionStatus>('/predictions/status/');
-  return response.data;
-};
-
-export const predictWaitingTime = async (data: PredictionRequest): Promise<PredictionResult> => {
-  const response = await apiClient.post<PredictionResult>('/predictions/predict/', data);
-  return response.data;
-};
+export {
+  getPredictionStatus,
+  predictWaitingTime,
+  PredictionError,
+  parseApiError,
+} from './predictionApi';
 
 export const getAnalyticsOverview = async (): Promise<AnalyticsOverview> => {
   const response = await apiClient.get<AnalyticsOverview>('/analytics/overview/');

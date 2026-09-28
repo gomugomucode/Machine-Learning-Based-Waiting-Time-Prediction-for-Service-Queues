@@ -58,52 +58,99 @@ export interface ModelBenchmark {
   test_r2: number;
 }
 
-export interface PredictionStatus {
+export interface BenchmarkItem {
+  Model?: string;
+  model_name?: string;
+  Type?: string;
+  MAE?: number;
+  test_mae?: number;
+  train_mae?: number;
+  RMSE?: number;
+  test_rmse?: number;
+  'R²'?: number;
+  test_r2?: number;
+}
+
+export interface BackendStatus {
   status: string;
   model_connected: boolean;
   version: string;
+  model?: string;
   model_name?: string;
-  trained_at?: string;
-  training_samples?: number;
-  test_samples?: number;
+  model_file?: string;
   metrics?: {
     test_mae_minutes?: number;
     test_rmse_minutes?: number;
     test_r2_score?: number;
   };
-  all_benchmarks?: ModelBenchmark[];
-  message: string;
+  features?: string[];
+  all_benchmarks?: BenchmarkItem[];
+  message?: string;
 }
+
+export type PredictionStatus = BackendStatus;
 
 export interface PredictionRequest {
   queue_length: number;
   arrival_time?: string;
-  service_type?: number;
+  lag1_queue_length?: number;
+  arrivals_last_15m?: number;
+  arrivals_last_30m?: number;
   active_counters?: number;
+  service_type?: number;
 }
 
-export interface PredictionResult {
-  status: 'success' | 'error';
-  model_name: string;
+export interface ConfidenceInterval {
+  lower_minutes: number;
+  upper_minutes: number;
+  mae_tolerance: number;
+  method?: string;
+}
+
+export interface CongestionInfo {
+  level: string;
+  badge_color: 'emerald' | 'blue' | 'amber' | 'rose' | string;
+}
+
+export interface EvaluatedFeatures {
+  queue_length: number;
+  minutes_since_opening?: number;
+  hour?: number;
+  minute?: number;
+  day_of_week?: number;
+  sin_time?: number;
+  cos_time?: number;
+  lag1_queue_length?: number;
+  arrivals_last_15m?: number;
+  arrivals_last_30m?: number;
+  active_counters?: number;
+  capacity_multiplier?: number;
+  service_type_name?: string;
+  service_complexity_multiplier?: number;
+  arrival_time?: string;
+  minutes_since_0900?: number;
+  [key: string]: unknown;
+}
+
+export interface PredictionResponse {
+  status: 'success' | 'error' | string;
   predicted_wait_minutes: number;
-  confidence_interval: {
-    lower_minutes: number;
-    upper_minutes: number;
-    mae_tolerance: number;
-  };
-  congestion: {
-    level: string;
-    badge_color: 'emerald' | 'blue' | 'amber' | 'rose';
-  };
-  features_evaluated: {
-    queue_length: number;
-    active_counters?: number;
-    service_type_name?: string;
-    service_complexity_multiplier?: number;
-    arrival_time: string;
-    minutes_since_0900: number;
-    capacity_multiplier?: number;
-  };
+  predicted_wait_seconds: number;
+  model?: string;
+  model_name: string;
+  model_version?: string;
+  confidence_interval: ConfidenceInterval;
+  congestion: CongestionInfo;
+  features_evaluated: EvaluatedFeatures;
+}
+
+export type PredictionResult = PredictionResponse;
+
+export interface PredictionApiError {
+  error: string;
+  detail?: string;
+  status?: number;
+  isNetworkError?: boolean;
 }
 
 export interface AnalyticsSummary {

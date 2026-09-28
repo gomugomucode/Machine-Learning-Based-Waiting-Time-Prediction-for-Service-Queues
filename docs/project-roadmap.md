@@ -14,8 +14,8 @@
 | **Phase 1** | **Application Foundation & Data Engineering** | Monorepo layout, PostgreSQL 17 setup, Django REST Framework backend, React 19 + TypeScript + Vite frontend, 12,017 Kaggle queue observations ingestion. | <span style="color:green;font-weight:bold;">🟢 COMPLETED</span> | [`docs/phases/phase-01-foundation-and-inspection.md`](phases/phase-01-foundation-and-inspection.md) |
 | **Phase 2** | **Dataset Validation & Machine Learning Experiments** | 20-point validation audit, independent target verification, prediction-time information boundary ($t_0$), causal 10-feature engineering, chronological train/test split, baselines, and candidate ML models benchmark. | <span style="color:green;font-weight:bold;">🟢 COMPLETED</span> | [`docs/phase2_ml_report.md`](phase2_ml_report.md) & [`docs/phase2_dataset_validation.md`](phase2_dataset_validation.md) |
 | **Phase 3** | **Model Deployment & Backend API Integration** | In-memory singleton `PredictionService`, `POST /api/predictions/predict/`, strict input validation, exact 10-feature schema enforcement, absence of leakage assertions, and smoke test utility. | <span style="color:green;font-weight:bold;">🟢 COMPLETED</span> | [`docs/phase3_model_integration.md`](phase3_model_integration.md) |
-| **Phase 4** | **Interactive UI Integration & Visual Telemetry** | Connect React prediction view to live backend inference, dynamic counter simulation sliders, empirical tolerance bounds, and congestion alert cards. | <span style="color:blue;font-weight:bold;">🔵 NEXT PHASE</span> | In Progress |
-| **Phase 5** | **System Hardening & End-to-End Testing** | Production readiness, comprehensive integration test suite, cross-browser validation, and stress-testing. | <span style="color:gray;">⚪ PENDING</span> | Planned |
+| **Phase 4** | **Interactive UI Integration & Visual Telemetry** | Connect React prediction view to live backend inference, dynamic counter simulation sliders, empirical tolerance bounds, and congestion alert cards. | <span style="color:green;font-weight:bold;">🟢 COMPLETED</span> | [`docs/phase4_frontend_integration.md`](phase4_frontend_integration.md) |
+| **Phase 5** | **System Hardening & End-to-End Testing** | Production readiness, comprehensive integration test suite, cross-browser validation, and stress-testing. | <span style="color:blue;font-weight:bold;">🔵 NEXT PHASE</span> | Planned |
 | **Phase 6** | **Academic Report & Defense Preparation** | Final thesis documentation, literature review, methodology chapter, comparative experimental tables, viva defense presentation. | <span style="color:gray;">⚪ PENDING</span> | Planned |
 
 ---
@@ -57,3 +57,15 @@
 - [x] 9 Django tests passing in [`backend/apps/predictions/tests.py`](../backend/apps/predictions/tests.py) (17 total Django tests)
 - [x] CLI smoke test utility [`backend/ml/smoke_test_inference.py`](../backend/ml/smoke_test_inference.py) verifying end-to-end inference
 - [x] Comprehensive documentation in [`docs/phase3_model_integration.md`](phase3_model_integration.md)
+
+### Phase 4: Frontend Integration & Real-Time Prediction UI
+- [x] Centralized typed API client created in [`frontend/src/services/predictionApi.ts`](../frontend/src/services/predictionApi.ts)
+- [x] Base URL normalization for `VITE_API_BASE_URL` supporting `/api` routing
+- [x] Interactive prediction page with required/optional field validation in [`frontend/src/pages/Prediction.tsx`](../frontend/src/pages/Prediction.tsx)
+- [x] Prominent estimated waiting time display (minutes and "Approximately X min Y sec")
+- [x] Empirical $\pm\text{MAE}$ error tolerance interval accurately labeled (distinct from 95% confidence interval)
+- [x] Congestion badge rendered from backend response
+- [x] Technical model info and collapsible causal feature transparency
+- [x] Complete Vitest test suite with 10 integration scenarios passing (`npm test -- --run`, 15/15 tests)
+- [x] End-to-end browser verification on `http://localhost:5173/prediction`
+- [x] Comprehensive Phase 4 report created in [`docs/phase4_frontend_integration.md`](phase4_frontend_integration.md)

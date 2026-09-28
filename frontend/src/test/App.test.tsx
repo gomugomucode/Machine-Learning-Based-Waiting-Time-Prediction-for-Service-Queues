@@ -15,31 +15,32 @@ vi.spyOn(api, 'getServiceTypes').mockResolvedValue([
 vi.spyOn(api, 'getPredictionStatus').mockResolvedValue({
   status: 'online',
   model_connected: true,
-  version: '1.0.0',
-  model_name: 'Ridge Regression',
-  trained_at: '2026-09-27T21:09:21',
-  training_samples: 7975,
-  test_samples: 4042,
+  version: 'phase2-best-model',
+  model_name: 'Random Forest Regressor',
   metrics: {
-    test_mae_minutes: 15.16,
-    test_rmse_minutes: 19.87,
-    test_r2_score: 0.9073,
+    test_mae_minutes: 0.92,
+    test_rmse_minutes: 1.77,
+    test_r2_score: 0.9994,
   },
   all_benchmarks: [
-    { model_name: 'Naive Mean Baseline', train_mae: 56.24, test_mae: 55.74, test_rmse: 65.47, test_r2: -0.0066 },
-    { model_name: 'Ridge Regression', train_mae: 11.48, test_mae: 15.16, test_rmse: 19.87, test_r2: 0.9073 },
+    { Model: 'Random Forest', Type: 'Machine Learning', MAE: 0.92, RMSE: 1.77, 'R²': 0.9994 },
+    { Model: 'Linear Regression', Type: 'Machine Learning', MAE: 10.76, RMSE: 14.62, 'R²': 0.9568 },
   ],
-  message: 'Trained machine learning pipeline is loaded.',
+  message: 'Trained Phase 2 Random Forest Regressor is loaded and ready for real-time inference.',
 });
 
 vi.spyOn(api, 'predictWaitingTime').mockResolvedValue({
   status: 'success',
-  model_name: 'Ridge Regression',
-  predicted_wait_minutes: 30.7,
+  predicted_wait_minutes: 26.36,
+  predicted_wait_seconds: 1582,
+  model: 'Random Forest Regressor',
+  model_name: 'Random Forest Regressor',
+  model_version: 'phase2-best-model',
   confidence_interval: {
-    lower_minutes: 15.5,
-    upper_minutes: 45.8,
-    mae_tolerance: 15.2,
+    lower_minutes: 25.59,
+    upper_minutes: 27.14,
+    mae_tolerance: 0.78,
+    method: 'Empirical ±MAE error tolerance interval from held-out test evaluation (test MAE = 0.92 min).',
   },
   congestion: {
     level: 'Moderate Wait',
@@ -47,12 +48,19 @@ vi.spyOn(api, 'predictWaitingTime').mockResolvedValue({
   },
   features_evaluated: {
     queue_length: 25,
+    minutes_since_opening: 90,
+    hour: 10,
+    minute: 30,
+    day_of_week: 0,
+    sin_time: 0.9238,
+    cos_time: 0.3826,
+    lag1_queue_length: 23,
+    arrivals_last_15m: 8,
+    arrivals_last_30m: 17,
     active_counters: 4,
+    capacity_multiplier: 1.0,
     service_type_name: 'Cash Transactions',
     service_complexity_multiplier: 0.85,
-    arrival_time: '11:30',
-    minutes_since_0900: 150,
-    capacity_multiplier: 1.0,
   },
 });
 
@@ -83,9 +91,9 @@ describe('Prediction Page Live ML Inference', () => {
       );
     });
 
-    expect(screen.getByText('Waiting Time Prediction Engine')).toBeInTheDocument();
-    expect(screen.getByText(/Model Online • Ridge Regression/i)).toBeInTheDocument();
-    expect(screen.getByText(/Phase 2 Model Online/i)).toBeInTheDocument();
+    expect(screen.getByText('Waiting-Time Prediction Engine')).toBeInTheDocument();
+    expect(screen.getByText('● Prediction engine online')).toBeInTheDocument();
+    expect(screen.getByText(/Active Architecture: Random Forest Regressor/i)).toBeInTheDocument();
     expect(screen.getByText('Candidate Models Benchmark')).toBeInTheDocument();
   });
 
@@ -98,16 +106,16 @@ describe('Prediction Page Live ML Inference', () => {
       );
     });
 
-    const button = screen.getByRole('button', { name: /calculate predicted waiting time/i });
+    const button = screen.getByRole('button', { name: /predict waiting time/i });
     await act(async () => {
       fireEvent.click(button);
     });
 
-    expect(screen.getByText('Live Model Prediction Result')).toBeInTheDocument();
-    expect(screen.getByText('30.7')).toBeInTheDocument();
-    expect(screen.getByText(/15.5 – 45.8/i)).toBeInTheDocument();
+    expect(screen.getByText('Estimated Waiting Time')).toBeInTheDocument();
+    expect(screen.getByText('26.4')).toBeInTheDocument();
+    expect(screen.getByText(/25.6 – 27.1/i)).toBeInTheDocument();
     expect(screen.getByText('Moderate Wait')).toBeInTheDocument();
-    expect(screen.getByText(/Model Feature Vector Evaluated/i)).toBeInTheDocument();
+    expect(screen.getByText(/Prediction Inputs & Evaluated Features/i)).toBeInTheDocument();
   });
 });
 
