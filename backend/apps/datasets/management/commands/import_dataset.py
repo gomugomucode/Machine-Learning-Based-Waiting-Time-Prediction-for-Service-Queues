@@ -7,8 +7,7 @@ from datetime import datetime
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.utils import timezone
-from apps.queue_management.models import QueueObservation
-from apps.datasets.models import DatasetMetadata
+from django.apps import apps
 
 
 class Command(BaseCommand):
@@ -34,6 +33,9 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        QueueObservation = apps.get_model('queue_management', 'QueueObservation')
+        DatasetMetadata = apps.get_model('datasets', 'DatasetMetadata')
+
         csv_path = options['csv_file']
         limit = options['limit']
         dry_run = options['dry_run']

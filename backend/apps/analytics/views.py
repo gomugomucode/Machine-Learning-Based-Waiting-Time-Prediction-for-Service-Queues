@@ -1,9 +1,9 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from django.apps import apps
 from django.db.models import Avg, Count, Min, Max
 from django.db.models.functions import ExtractHour
-from apps.queue_management.models import QueueObservation
 
 
 class AnalyticsOverviewView(APIView):
@@ -11,6 +11,7 @@ class AnalyticsOverviewView(APIView):
     Returns foundational statistics on observed queue wait times and service rates.
     """
     def get(self, request):
+        QueueObservation = apps.get_model('queue_management', 'QueueObservation')
         stats = QueueObservation.objects.aggregate(
             total_observations=Count('id'),
             avg_wait_minutes=Avg('wait_time'),
@@ -42,6 +43,7 @@ class HourlyQueueAnalyticsView(APIView):
     Returns average waiting time and queue length grouped by arrival hour.
     """
     def get(self, request):
+        QueueObservation = apps.get_model('queue_management', 'QueueObservation')
         hourly_data = (
             QueueObservation.objects.annotate(hour=ExtractHour('arrival_time'))
             .values('hour')

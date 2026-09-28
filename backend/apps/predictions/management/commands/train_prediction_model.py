@@ -9,7 +9,7 @@ import pandas as pd
 from pathlib import Path
 from django.core.management.base import BaseCommand
 from django.conf import settings
-from apps.queue_management.models import QueueObservation
+from django.apps import apps
 
 from sklearn.dummy import DummyRegressor
 from sklearn.linear_model import LinearRegression, Ridge
@@ -33,6 +33,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.stdout.write(self.style.MIGRATE_HEADING("=== Phase 2: Machine Learning Model Training & Evaluation ==="))
+
+        QueueObservation = apps.get_model('queue_management', 'QueueObservation')
 
         # 1. Load Data
         obs_qs = QueueObservation.objects.all().order_by('arrival_time')
