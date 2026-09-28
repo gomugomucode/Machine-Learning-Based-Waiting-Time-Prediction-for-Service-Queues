@@ -135,11 +135,15 @@ def extract_features(
 def build_single_inference_vector(
     queue_length: int,
     arrival_time_str: str,
+    lag1_queue_length: Optional[int] = None,
+    arrivals_last_15m: Optional[float] = None,
+    arrivals_last_30m: Optional[float] = None,
     feature_set: str = 'extended',
     historical_priors: Optional[Dict[str, float]] = None
 ) -> pd.DataFrame:
     """
-    Constructs a 1-row feature DataFrame for real-time inference at prediction moment.
+    Constructs a 1-row feature DataFrame for real-time inference at prediction moment t_0.
+    Ensures exact 10-feature schema ordering and absence of post-t_0 leakage.
     """
     arr_dt = pd.to_datetime(arrival_time_str)
     hour = arr_dt.hour
@@ -163,10 +167,24 @@ def build_single_inference_vector(
 
     if feature_set == 'extended':
         priors = historical_priors or {}
-        # Default causal lag fallbacks if operational queue stream is unavailable
-        row['lag1_queue_length'] = float(priors.get('lag1_queue_length', queue_length))
-        row['arrivals_last_15m'] = float(priors.get('arrivals_last_15m', 27.5))
-        row['arrivals_last_30m'] = float(priors.get('arrivals_last_30m', 55.0))
+        # 1. lag1_queue_length: explicitly passed -> priors -> fallback to current queue_length
+        if lag1_queue_length is not None:
+            row['lag1_queue_length'] = float(lag1_queue_length)
+        else:
+            row['lag1_queue_length'] = float(priors.get('lag1_queue_length', queue_length))
+
+        # 2. arrivals_last_15m: explicitly passed -> priors -> fallback to empirical mean (27.5)
+        if arrivals_last_15m is not None:
+            row['arrivals_last_15m'] = float(arrivals_last_15m)
+        else:
+            row['arrivals_last_15m'] = float(priors.get('arrivals_last_15m', 27.5))
+
+        # 3. arrivals_last_30m: explicitly passed -> priors -> fallback to empirical mean (55.0)
+        if arrivals_last_30m is not None:
+            row['arrivals_last_30m'] = float(arrivals_last_30m)
+        else:
+            row['arrivals_last_30m'] = float(priors.get('arrivals_last_30m', 55.0))
+
         cols = EXTENDED_FEATURE_NAMES
     else:
         cols = CORE_FEATURE_NAMES
@@ -174,3 +192,4 @@ def build_single_inference_vector(
     df_row = pd.DataFrame([row])[cols]
     validate_feature_matrix(df_row)
     return df_row
+

@@ -334,6 +334,39 @@ Execute Phase 2 according to strict scientific standards: validate the 12,017-re
 * `python backend/manage.py test apps`: **8/8 tests passed in 0.99s**.
 * `npm test -- --run`: **5/5 tests passed in 2.17s**.
 
+---
+
+## Entry 011: 2026-09-28 — Phase 3: Model Deployment & Django Backend Integration Completed
+
+### Objective
+Connect the Phase 2 trained and verified Random Forest Regressor (`backend/ml/artifacts/best_waiting_time_model.joblib`) to the Django REST Framework backend. Expose real-time inference via `POST /api/predictions/predict/` and status via `GET /api/predictions/status/`, ensuring zero target leakage, exact 10-feature schema ordering, singleton in-memory caching, comprehensive input validation, and full automated test coverage.
+
+### 1. Files Created & Modified
+* **Backend Prediction Pipeline:**
+  * [`backend/apps/predictions/services.py`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/backend/apps/predictions/services.py): Implemented memory-cached singleton `PredictionService`, loading model once, extracting exact 10 features, enforcing leakage guardrails, and calculating empirical ±MAE tolerance bands.
+  * [`backend/apps/predictions/views.py`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/backend/apps/predictions/views.py): Implemented strict input validation on `queue_length`, `arrival_time`, `lag1_queue_length`, `arrivals_last_15m`, and `arrivals_last_30m`, returning clear HTTP 400 errors on invalid inputs.
+  * [`backend/ml/features.py`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/backend/ml/features.py): Enhanced `build_single_inference_vector` to directly accept causal lag parameters with sensible fallback priors and strict schema ordering.
+* **Testing & Verification:**
+  * [`backend/apps/predictions/tests.py`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/backend/apps/predictions/tests.py): Created 9 unit and integration tests covering successful predictions, missing required fields, negative values, malformed timestamps, artifact loading, exact 10-feature schema ordering, and rejection of post-$t_0$ leakage attributes.
+  * [`backend/ml/smoke_test_inference.py`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/backend/ml/smoke_test_inference.py): Standalone CLI smoke test script executing realistic end-to-end inference against the trained artifact.
+* **Documentation:**
+  * [`docs/phase3_model_integration.md`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/docs/phase3_model_integration.md): Formal deployment and integration report with exact schemas, validation rules, and test results.
+
+### 2. Live HTTP Verification Results
+* `POST /api/predictions/predict/` with realistic payload:
+  * Input: $Q=25, Q_{\text{lag1}}=23, \text{arr}_{15}=8, \text{arr}_{30}=17, t_{\text{arr}}=\text{'2026-10-19T10:30:00'}$
+  * Result: `HTTP 200 OK` $\rightarrow$ `predicted_wait_minutes: 31.02`, `predicted_wait_seconds: 1861`, `model: "Random Forest Regressor"`, `model_version: "phase2-best-model"`.
+* Validation rejects:
+  * Negative queue: `HTTP 400` $\rightarrow$ `{"error": "queue_length must be a non-negative integer."}`.
+  * Invalid timestamp: `HTTP 400` $\rightarrow$ `{"error": "Invalid arrival_time 'invalid-time'..."}`.
+  * Missing queue: `HTTP 400` $\rightarrow$ `{"error": "queue_length is a required field."}`.
+
+### 3. Verification Test Suite Status
+* `python backend/manage.py test apps`: **17/17 passed in 1.15s** (all 9 prediction tests + 8 queue management tests).
+* `pytest backend/ml/tests/ -v`: **11/11 passed in 1.85s**.
+* `npm test -- --run`: **5/5 passed in 2.60s**.
+
+
 
 
 
