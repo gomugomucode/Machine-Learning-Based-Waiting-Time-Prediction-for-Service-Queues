@@ -366,6 +366,70 @@ Connect the Phase 2 trained and verified Random Forest Regressor (`backend/ml/ar
 * `pytest backend/ml/tests/ -v`: **11/11 passed in 1.85s**.
 * `npm test -- --run`: **5/5 passed in 2.60s**.
 
+---
+
+## Entry 012: 2026-09-28 — Phase 4: Frontend Integration & Real-Time Prediction UI Completed
+
+### Objective
+Connect the React 19 frontend to the live Django prediction endpoint (`POST /api/predictions/predict/`), supporting real-time interactive waiting time forecasting, transparent feature telemetry, multi-teller and service multipliers, and empirical tolerance bounds.
+
+### 1. Files Created & Modified
+* [`frontend/src/services/predictionApi.ts`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/frontend/src/services/predictionApi.ts): Typed client with `/api` routing normalization and error normalization.
+* [`frontend/src/pages/Prediction.tsx`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/frontend/src/pages/Prediction.tsx): Interactive prediction UI with dual inputs, congestion badges, and collapsible audit panel.
+* [`frontend/src/test/Prediction.test.tsx`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/frontend/src/test/Prediction.test.tsx): 10 Vitest integration scenarios covering user flows, calculations, and errors.
+* [`docs/phase4_frontend_integration.md`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/docs/phase4_frontend_integration.md): Comprehensive Phase 4 report.
+
+### 2. Verification Status
+* Frontend Vitest: **15/15 passed** (`App.test.tsx` 5/5, `Prediction.test.tsx` 10/10).
+* Vite production build: **Success in 900ms** (`dist/index.html` 0.72 kB, `index.js` 384.72 kB).
+
+---
+
+## Entry 013: 2026-09-28 — Phase 5: Real-World Validation, Model Stress Testing & Academic Robustness Completed
+
+### Objective
+Conduct an exhaustive, academically rigorous audit and stress test of the ML pipeline and dataset to determine whether the Random Forest's high test performance ($R^2 \approx 0.9994$, $\text{MAE} \approx 0.9166\text{ min}$) is scientifically legitimate or driven by structural artefacts, leakage, or synthetic generation rules.
+
+### 1. Experiments Executed
+1. **Full Dataset Structure Audit:** Measured distributions and correlations across all 14 operating days (12,017 records).
+2. **Investigation of $R^2 \approx 0.9994$:** Proved that queue mechanics ($M/M/4$ queue clearing rate $0.7739 \approx 0.7750\text{ min/person}$) and low simulation clearing variance ($\sigma = 0.238\text{ min}$) account for the score, rather than feature leakage.
+3. **Controlled 5-Experiment Feature Ablation:**
+   - Exp A (`queue_length` only): $R^2 = 0.9442$, MAE = 11.95 min.
+   - Exp B (`queue_length` + `minutes_since_opening`): $R^2 = 0.9939$, MAE = 3.36 min.
+   - Exp C (All 10 features): $R^2 = 0.9994$, MAE = 0.89 min.
+   - Exp D (No `queue_length`, 9 remaining): $R^2 = 0.9994$, MAE = 0.91 min (`lag1` surrogate).
+   - Exp E (Only temporal features): $R^2 = 0.9216$, MAE = 13.31 min.
+4. **Temporal Generalization Test:** Evaluated performance independently across test days (Days 11–14 MAE: 0.64 to 1.16 min).
+5. **Edge Case & Monotonicity Analysis:** Evaluated $Q \in [0, 340]$. Discovered and explained tree partition non-monotonicity at $Q=100$ at 10:30 AM due to out-of-distribution training combinations.
+6. **Target Proxy & Leakage Audit:** Independently verified all 10 features are strictly observable at $t_0$.
+
+### 2. Files Created & Modified
+* **Diagnostic Code & Artifacts:**
+  - [`backend/ml/phase5_stress_test.py`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/backend/ml/phase5_stress_test.py): Complete diagnostic execution pipeline.
+  - [`backend/ml/artifacts/phase5_audit_summary.json`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/backend/ml/artifacts/phase5_audit_summary.json): Complete numeric metric repository.
+  - [`backend/ml/artifacts/ablation_results.json`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/backend/ml/artifacts/ablation_results.json): Controlled ablation test results.
+* **Academic Figures (300 DPI):**
+  - `backend/ml/phase5_figures/` & `docs/phase5_figures/`:
+    1. `actual_vs_predicted.png`
+    2. `residual_vs_predicted.png`
+    3. `abs_error_vs_queue_length.png`
+    4. `error_distribution.png`
+    5. `actual_waiting_time_vs_queue_length.png`
+* **Documentation:**
+  - [`docs/phase5_dataset_structure_audit.md`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/docs/phase5_dataset_structure_audit.md): Dataset structure, distributions, and provenance.
+  - [`docs/phase5_high_r2_investigation.md`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/docs/phase5_high_r2_investigation.md): Physical explanation and derivation of $R^2 = 0.9994$.
+  - [`docs/phase5_feature_ablation.md`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/docs/phase5_feature_ablation.md): Controlled experiments A through E.
+  - [`docs/phase5_temporal_generalization.md`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/docs/phase5_temporal_generalization.md): Day-by-day generalization and baseline benchmark.
+  - [`docs/phase5_edge_case_analysis.md`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/docs/phase5_edge_case_analysis.md): Monotonicity breakdown, target proxy table, and production boundaries.
+  - [`docs/project-roadmap.md`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/docs/project-roadmap.md): Marked Phase 5 completed.
+  - [`docs/completed_tasks_summary.md`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/docs/completed_tasks_summary.md): Updated project inventory.
+
+### 3. Verification Commands & Regression Status
+* `python backend/manage.py test apps`: **17/17 passed in 2.06s**.
+* `pytest backend/ml/tests/ -v`: **11/11 passed in 2.38s**.
+* `npm test -- --run`: **15/15 passed in 5.50s**.
+* `npm run build`: **Built successfully in 900ms**.
+
 
 
 

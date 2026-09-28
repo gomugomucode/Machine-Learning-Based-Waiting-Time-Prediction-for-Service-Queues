@@ -1,0 +1,389 @@
+{
+  "audit_metrics": {
+    "total_records": 12017,
+    "num_unique_days": 14,
+    "unique_dates": [
+      "2026-10-05",
+      "2026-10-06",
+      "2026-10-07",
+      "2026-10-08",
+      "2026-10-09",
+      "2026-10-12",
+      "2026-10-13",
+      "2026-10-14",
+      "2026-10-15",
+      "2026-10-16",
+      "2026-10-19",
+      "2026-10-20",
+      "2026-10-21",
+      "2026-10-22"
+    ],
+    "records_per_day": {
+      "2026-10-05": 880,
+      "2026-10-06": 720,
+      "2026-10-07": 1020,
+      "2026-10-08": 802,
+      "2026-10-09": 522,
+      "2026-10-12": 989,
+      "2026-10-13": 684,
+      "2026-10-14": 548,
+      "2026-10-15": 1021,
+      "2026-10-16": 789,
+      "2026-10-19": 1000,
+      "2026-10-20": 990,
+      "2026-10-21": 1001,
+      "2026-10-22": 1051
+    },
+    "records_per_hour": {
+      "9": 1398,
+      "10": 1494,
+      "11": 1540,
+      "12": 1560,
+      "13": 1487,
+      "14": 1528,
+      "15": 1518,
+      "16": 1492
+    },
+    "queue_length_stats": {
+      "count": 12017,
+      "min": 0.0,
+      "q25": 56.0,
+      "median": 121.0,
+      "mean": 132.42706166264458,
+      "q75": 204.0,
+      "max": 340.0,
+      "std": 89.50759956258649,
+      "skew": 0.33313753189446216,
+      "kurtosis": -0.9975041983087451
+    },
+    "wait_time_stats": {
+      "count": 12017,
+      "min": 0.0,
+      "q25": 45.63333333333333,
+      "median": 97.95,
+      "mean": 102.3974827327952,
+      "q75": 151.36666666666667,
+      "max": 275.8333333333333,
+      "std": 66.81067068374628,
+      "skew": 0.31051852115600176,
+      "kurtosis": -0.8850547960616848
+    },
+    "service_duration_stats": {
+      "count": 12017,
+      "min": 0.0,
+      "q25": 0.6833333333333333,
+      "median": 1.65,
+      "mean": 2.3799020831599678,
+      "q75": 3.3,
+      "max": 20.75,
+      "std": 2.4091123523760687,
+      "skew": 2.0193331614937886,
+      "kurtosis": 5.780335255339762
+    },
+    "correlations": {
+      "pearson_queue_vs_wait": 0.9643518747107381,
+      "spearman_queue_vs_wait": 0.9734700016436106,
+      "queue_lag1_autocorr": 0.9952685859315789,
+      "wait_lag1_autocorr": 0.9945125872234484,
+      "mean_wait_per_person_in_line": 0.8145237849433561,
+      "std_wait_per_person_in_line": 0.23777172536250984,
+      "inter_arrival_mean_sec": 124.61829075476409,
+      "inter_arrival_median_sec": 23.0
+    }
+  },
+  "ablation_results": {
+    "Exp_A_Queue_Length_Only": {
+      "features": [
+        "queue_length"
+      ],
+      "num_features": 1,
+      "test_mae": 11.9516,
+      "test_rmse": 16.6025,
+      "test_r2": 0.944236
+    },
+    "Exp_B_Queue_Plus_Opening_Time": {
+      "features": [
+        "queue_length",
+        "minutes_since_opening"
+      ],
+      "num_features": 2,
+      "test_mae": 3.3569,
+      "test_rmse": 5.4714,
+      "test_r2": 0.993944
+    },
+    "Exp_C_All_10_Causal_Features": {
+      "features": [
+        "queue_length",
+        "minutes_since_opening",
+        "hour",
+        "minute",
+        "day_of_week",
+        "sin_time",
+        "cos_time",
+        "lag1_queue_length",
+        "arrivals_last_15m",
+        "arrivals_last_30m"
+      ],
+      "num_features": 10,
+      "test_mae": 0.8935,
+      "test_rmse": 1.7135,
+      "test_r2": 0.999406
+    },
+    "Exp_D_No_Queue_Length": {
+      "features": [
+        "minutes_since_opening",
+        "hour",
+        "minute",
+        "day_of_week",
+        "sin_time",
+        "cos_time",
+        "lag1_queue_length",
+        "arrivals_last_15m",
+        "arrivals_last_30m"
+      ],
+      "num_features": 9,
+      "test_mae": 0.9103,
+      "test_rmse": 1.752,
+      "test_r2": 0.999379
+    },
+    "Exp_E_Only_Temporal_Features": {
+      "features": [
+        "minutes_since_opening",
+        "hour",
+        "minute",
+        "day_of_week",
+        "sin_time",
+        "cos_time"
+      ],
+      "num_features": 6,
+      "test_mae": 13.3095,
+      "test_rmse": 19.6892,
+      "test_r2": 0.921574
+    }
+  },
+  "split_comparison": {
+    "chronological_official": {
+      "MAE": 0.8935,
+      "RMSE": 1.7135,
+      "R\u00b2": 0.999406
+    },
+    "random_shuffled_diagnostic": {
+      "MAE": 2.176,
+      "RMSE": 4.4999,
+      "R\u00b2": 0.995521
+    },
+    "grouped_by_day_cv_mean": {
+      "MAE": 14.8325,
+      "RMSE": 20.6409,
+      "R\u00b2": 0.903702,
+      "std_MAE": 2.425,
+      "std_R\u00b2": 0.018077
+    }
+  },
+  "baseline_comparison": {
+    "Global Historical Mean": {
+      "MAE": 57.4948,
+      "RMSE": 70.3097,
+      "R\u00b2": -8.2e-05
+    },
+    "Hourly Historical Mean": {
+      "MAE": 21.2898,
+      "RMSE": 28.5036,
+      "R\u00b2": 0.835637
+    },
+    "Queue-Aware Proportional Heuristic": {
+      "MAE": 12.5694,
+      "RMSE": 16.789,
+      "R\u00b2": 0.942977
+    },
+    "Linear Regression (queue_length only)": {
+      "MAE": 12.8706,
+      "RMSE": 17.4211,
+      "R\u00b2": 0.938602
+    },
+    "Linear Regression (all 10 features)": {
+      "MAE": 10.7616,
+      "RMSE": 14.6183,
+      "R\u00b2": 0.956768
+    },
+    "Random Forest Regressor (Selected)": {
+      "MAE": 0.8935,
+      "RMSE": 1.7135,
+      "R\u00b2": 0.999406
+    }
+  },
+  "linear_model_params": {
+    "slope": 0.7738911355831455,
+    "intercept": 6.394538804539891
+  },
+  "period_error_stats": {
+    "Morning (9-11)": {
+      "count": 962,
+      "mean": 0.8652738213910889,
+      "max": 6.59892613108785,
+      "std": 0.8733965699929302
+    },
+    "Midday Peak (11-14)": {
+      "count": 1534,
+      "mean": 0.9629368068988914,
+      "max": 17.84679641063076,
+      "std": 1.603068069831654
+    },
+    "Afternoon (14-17)": {
+      "count": 1546,
+      "mean": 0.8421335393678061,
+      "max": 21.89557453221724,
+      "std": 1.6000824074093647
+    }
+  },
+  "queue_bucket_error_stats": {
+    "Low (0-20)": {
+      "count": 327,
+      "mean": 1.0598189463252004,
+      "max": 6.59892613108785,
+      "std": 1.0558259461206843
+    },
+    "Medium (21-50)": {
+      "count": 481,
+      "mean": 0.6319280732014078,
+      "max": 2.8626272822544934,
+      "std": 0.5507595263284515
+    },
+    "High (51-100)": {
+      "count": 628,
+      "mean": 0.8392311917875854,
+      "max": 7.084429480710952,
+      "std": 0.8744271591638965
+    },
+    "Severe (>100)": {
+      "count": 2606,
+      "mean": 0.9339683586810951,
+      "max": 21.89557453221724,
+      "std": 1.7085040449232916
+    }
+  },
+  "day_generalization": [
+    {
+      "date": "2026-10-19",
+      "records": 1000,
+      "MAE": 1.1633,
+      "RMSE": 2.5116,
+      "R\u00b2": 0.999145
+    },
+    {
+      "date": "2026-10-20",
+      "records": 990,
+      "MAE": 1.0112,
+      "RMSE": 1.7904,
+      "R\u00b2": 0.99931
+    },
+    {
+      "date": "2026-10-21",
+      "records": 1001,
+      "MAE": 0.638,
+      "RMSE": 0.9591,
+      "R\u00b2": 0.999837
+    },
+    {
+      "date": "2026-10-22",
+      "records": 1051,
+      "MAE": 0.7691,
+      "RMSE": 1.1807,
+      "R\u00b2": 0.999184
+    }
+  ],
+  "extreme_case_results": [
+    {
+      "queue_length": 0,
+      "predicted_wait_minutes": 0.29,
+      "non_negative": true,
+      "monotonic_step": true
+    },
+    {
+      "queue_length": 1,
+      "predicted_wait_minutes": 1.48,
+      "non_negative": true,
+      "monotonic_step": true
+    },
+    {
+      "queue_length": 10,
+      "predicted_wait_minutes": 13.26,
+      "non_negative": true,
+      "monotonic_step": true
+    },
+    {
+      "queue_length": 25,
+      "predicted_wait_minutes": 30.9,
+      "non_negative": true,
+      "monotonic_step": true
+    },
+    {
+      "queue_length": 50,
+      "predicted_wait_minutes": 54.9,
+      "non_negative": true,
+      "monotonic_step": true
+    },
+    {
+      "queue_length": 100,
+      "predicted_wait_minutes": 43.67,
+      "non_negative": true,
+      "monotonic_step": false
+    },
+    {
+      "queue_length": 150,
+      "predicted_wait_minutes": 118.3,
+      "non_negative": true,
+      "monotonic_step": true
+    },
+    {
+      "queue_length": 200,
+      "predicted_wait_minutes": 153.96,
+      "non_negative": true,
+      "monotonic_step": true
+    },
+    {
+      "queue_length": 300,
+      "predicted_wait_minutes": 195.8,
+      "non_negative": true,
+      "monotonic_step": true
+    },
+    {
+      "queue_length": 340,
+      "predicted_wait_minutes": 196.52,
+      "non_negative": true,
+      "monotonic_step": true
+    }
+  ],
+  "monotonicity": false,
+  "production_distribution": {
+    "training_queue_length_range": [
+      0,
+      340
+    ],
+    "api_allowed_queue_length_range": [
+      0,
+      10000
+    ],
+    "frontend_slider_range": [
+      0,
+      200
+    ],
+    "frontend_input_range": [
+      0,
+      1000
+    ],
+    "training_arrival_hours": [
+      9,
+      16
+    ],
+    "api_accepted_arrival_hours": "Any ISO-8601 (00:00 to 23:59)",
+    "training_days_of_week": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "out_of_distribution_risk_note": "Submitting queue_length > 250 or arrival times outside 09:00\u201317:00 extrapolates beyond observed data."
+  }
+}

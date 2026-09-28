@@ -3,8 +3,7 @@
 **Project:** Intelligent Queue Management & Machine Learning-Based Waiting Time Prediction System  
 **Academic Degree:** Bachelor of Computer Applications (BCA) — 6th Semester Major Project  
 **Author:** Anupam Baral  
-**Report Date:** September 28, 2026  
-**Project Status:** **Phase 1, Phase 2, Phase 3, and Phase 4 FULLY COMPLETED & VERIFIED**  
+**Current Status:** **Phase 1, Phase 2, Phase 3, Phase 4, and Phase 5 FULLY COMPLETED & VERIFIED**  
 
 ---
 
@@ -92,6 +91,34 @@ The platform operates across three interconnected layers:
 - [x] **Live HTTP Verification:** Executed live HTTP calls against running Django server on port 8000, confirming both successful inference and robust error rejection.
 - [x] **Documentation:** Authored [`docs/phase3_model_integration.md`](phase3_model_integration.md).
 
+### Phase 4: Frontend Integration & Real-Time Prediction UI
+- [x] **Centralized Typed API Client (`frontend/src/services/predictionApi.ts`):** Complete request/response contracts, base URL normalization for `/api` routing.
+- [x] **Interactive Prediction UI (`frontend/src/pages/Prediction.tsx`):** Real-time inference trigger, dual queue input (slider + number box), dynamic active tellers and service category multipliers.
+- [x] **Transparent Telemetry Display:** High-impact wait time display (minutes and minutes/seconds), congestion badge styling, empirical $\pm\text{MAE}$ tolerance interval ($\pm 0.92$ min), and collapsible 10-feature audit panel.
+- [x] **Robust Error Handling:** Visual banners for HTTP 400 validation issues and connection offline warnings.
+- [x] **10 Integration Scenarios:** 10 Vitest tests created and passing in `frontend/src/test/Prediction.test.tsx`.
+- [x] **Documentation:** Authored [`docs/phase4_frontend_integration.md`](phase4_frontend_integration.md).
+
+### Phase 5: Real-World Validation, Model Stress Testing & Academic Robustness
+- [x] **Dataset Structure Audit:** Exhaustive empirical audit across 14 operational days and 12,017 records ([`docs/phase5_dataset_structure_audit.md`](phase5_dataset_structure_audit.md)).
+  - Identified Pearson correlation $r(Q, W) = 0.96435$, Spearman $\rho = 0.97347$, and lag-1 autocorrelation of $0.9953$.
+  - Discovered that the empirical OLS slope ($0.7739$) matches theoretical $M/M/4$ queueing mechanics ($3.1\text{ min} / 4 = 0.7750$) to $< 0.14\%$ error.
+  - Characterized dataset origin as a discrete-event queueing simulation (e.g., SimPy) rather than noisy human teller manual entries.
+- [x] **High $R^2$ ($0.9994$) Investigation:** Rigorous multi-hypothesis testing ([`docs/phase5_high_r2_investigation.md`](phase5_high_r2_investigation.md)) refuting data leakage and proving that queuing physics + low simulation noise allow deep decision trees to model service velocity with near-zero residual variance.
+- [x] **5-Experiment Feature Ablation:** Systematically isolated predictive sources ([`docs/phase5_feature_ablation.md`](phase5_feature_ablation.md) and [`backend/ml/artifacts/ablation_results.json`](../backend/ml/artifacts/ablation_results.json)):
+  - Exp A (`queue_length` alone): $R^2 = 0.9442$, MAE = 11.95 min.
+  - Exp B (`queue_length` + `minutes_since_opening`): $R^2 = 0.9939$, MAE = 3.36 min (explains 99.39% of variance with 2 features).
+  - Exp C (All 10 features): $R^2 = 0.9994$, MAE = 0.89 min.
+  - Exp D (No `queue_length`, 9 remaining): $R^2 = 0.9994$, MAE = 0.91 min (`lag1_queue_length` acts as seamless surrogate).
+  - Exp E (Only temporal features): $R^2 = 0.9216$, MAE = 13.31 min.
+- [x] **Temporal Stability & Baseline Benchmarking:** Tested performance on each of the 4 held-out test days ([`docs/phase5_temporal_generalization.md`](phase5_temporal_generalization.md)), proving uniform accuracy (daily MAE: 0.64 to 1.16 min) and comparing chronological vs. random and grouped-by-day splits.
+- [x] **Edge Case & Monotonicity Analysis:** Evaluated extreme queues $Q \in [0, 340]$ ([`docs/phase5_edge_case_analysis.md`](phase5_edge_case_analysis.md)):
+  - Verified non-negativity across all inputs ($W \ge 0.29$ min).
+  - Identified and scientifically documented a non-monotonicity anomaly at $Q=100$ (10:30 AM) caused by unconstrained decision tree boundary splits on out-of-distribution feature combinations.
+- [x] **Independent Target Proxy Audit:** Confirmed all 10 features are strictly observable at arrival time $t_0$.
+- [x] **Diagnostic Visualizations:** Generated 5 high-resolution academic figures in [`backend/ml/phase5_figures/`](../backend/ml/phase5_figures/) and [`docs/phase5_figures/`](phase5_figures/).
+- [x] **Regression Testing:** 100% pass across all 43 automated tests (17 Django, 11 ML, 15 Frontend) + Vite production build.
+
 ---
 
 ## 3. Current Live Processes & System Health
@@ -155,3 +182,9 @@ All technical reports and architectural specifications in `docs/`:
 12. [`docs/phases/phase-02-target-and-features.md`](phases/phase-02-target-and-features.md): Phase 2 milestone report.
 13. [`docs/phases/phase-03-model-deployment-and-api.md`](phases/phase-03-model-deployment-and-api.md): Phase 3 milestone report.
 14. [`docs/phase2_figures/`](phase2_figures/): 10 publication-quality diagnostic plots.
+15. [`docs/phase5_dataset_structure_audit.md`](phase5_dataset_structure_audit.md): 14-day empirical queue structure and distribution audit.
+16. [`docs/phase5_high_r2_investigation.md`](phase5_high_r2_investigation.md): Mathematical derivation and explanation of high $R^2$ ($0.9994$).
+17. [`docs/phase5_feature_ablation.md`](phase5_feature_ablation.md): Controlled 5-experiment feature ablation report.
+18. [`docs/phase5_temporal_generalization.md`](phase5_temporal_generalization.md): Day-by-day test stability and splitting analysis.
+19. [`docs/phase5_edge_case_analysis.md`](phase5_edge_case_analysis.md): Extreme queue values, tree monotonicity analysis, and proxy feature audit.
+20. [`docs/phase5_figures/`](phase5_figures/): 5 high-resolution academic diagnostic figures.

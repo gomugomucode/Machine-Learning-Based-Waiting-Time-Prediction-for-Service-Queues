@@ -15,8 +15,8 @@
 | **Phase 2** | **Dataset Validation & Machine Learning Experiments** | 20-point validation audit, independent target verification, prediction-time information boundary ($t_0$), causal 10-feature engineering, chronological train/test split, baselines, and candidate ML models benchmark. | <span style="color:green;font-weight:bold;">🟢 COMPLETED</span> | [`docs/phase2_ml_report.md`](phase2_ml_report.md) & [`docs/phase2_dataset_validation.md`](phase2_dataset_validation.md) |
 | **Phase 3** | **Model Deployment & Backend API Integration** | In-memory singleton `PredictionService`, `POST /api/predictions/predict/`, strict input validation, exact 10-feature schema enforcement, absence of leakage assertions, and smoke test utility. | <span style="color:green;font-weight:bold;">🟢 COMPLETED</span> | [`docs/phase3_model_integration.md`](phase3_model_integration.md) |
 | **Phase 4** | **Interactive UI Integration & Visual Telemetry** | Connect React prediction view to live backend inference, dynamic counter simulation sliders, empirical tolerance bounds, and congestion alert cards. | <span style="color:green;font-weight:bold;">🟢 COMPLETED</span> | [`docs/phase4_frontend_integration.md`](phase4_frontend_integration.md) |
-| **Phase 5** | **System Hardening & End-to-End Testing** | Production readiness, comprehensive integration test suite, cross-browser validation, and stress-testing. | <span style="color:blue;font-weight:bold;">🔵 NEXT PHASE</span> | Planned |
-| **Phase 6** | **Academic Report & Defense Preparation** | Final thesis documentation, literature review, methodology chapter, comparative experimental tables, viva defense presentation. | <span style="color:gray;">⚪ PENDING</span> | Planned |
+| **Phase 5** | **Real-World Validation, Model Stress Testing & Academic Robustness** | Full dataset structure audit, rigorous $R^2 \approx 0.9994$ investigation, feature ablations (Exp A–E), temporal generalization, monotonicity & edge case testing, and academic defensibility. | <span style="color:green;font-weight:bold;">🟢 COMPLETED</span> | [`docs/phase5_high_r2_investigation.md`](phase5_high_r2_investigation.md) & [`docs/phase5_dataset_structure_audit.md`](phase5_dataset_structure_audit.md) |
+| **Phase 6** | **Academic Report & Defense Preparation** | Final thesis documentation, literature review, methodology chapter, comparative experimental tables, viva defense presentation. | <span style="color:blue;font-weight:bold;">🔵 NEXT PHASE</span> | Planned |
 
 ---
 
@@ -69,3 +69,19 @@
 - [x] Complete Vitest test suite with 10 integration scenarios passing (`npm test -- --run`, 15/15 tests)
 - [x] End-to-end browser verification on `http://localhost:5173/prediction`
 - [x] Comprehensive Phase 4 report created in [`docs/phase4_frontend_integration.md`](phase4_frontend_integration.md)
+
+### Phase 5: Real-World Validation, Model Stress Testing & Academic Robustness
+- [x] Dataset structure audit in [`docs/phase5_dataset_structure_audit.md`](phase5_dataset_structure_audit.md) (12,017 records, 14 days, $r = 0.96435$, lag-1 autocorr = 0.9953)
+- [x] Scientific investigation of $R^2 = 0.9994$ in [`docs/phase5_high_r2_investigation.md`](phase5_high_r2_investigation.md) (M/M/4 queuing physics, Little's Law slope match $0.7739 \approx 0.7750$, discrete-event simulation determinism)
+- [x] Controlled 5-experiment feature ablation in [`docs/phase5_feature_ablation.md`](phase5_feature_ablation.md) and [`backend/ml/artifacts/ablation_results.json`](../backend/ml/artifacts/ablation_results.json):
+  - Exp A (`queue_length` only): $R^2 = 0.9442$, MAE = 11.95 min
+  - Exp B (`queue_length` + `minutes_since_opening`): $R^2 = 0.9939$, MAE = 3.36 min
+  - Exp C (All 10 causal features): $R^2 = 0.9994$, MAE = 0.89 min
+  - Exp D (No `queue_length`, 9 remaining): $R^2 = 0.9994$, MAE = 0.91 min (`lag1` surrogate)
+  - Exp E (Only 6 temporal features): $R^2 = 0.9216$, MAE = 13.31 min
+- [x] Temporal generalization and day-by-day stability in [`docs/phase5_temporal_generalization.md`](phase5_temporal_generalization.md) (Days 11–14 held-out MAE: 0.64 to 1.16 min)
+- [x] Target proxy audit and extreme-case monotonicity analysis in [`docs/phase5_edge_case_analysis.md`](phase5_edge_case_analysis.md):
+  - Proved all 10 features strictly causal and available at $t_0$
+  - Discovered and explained non-monotonicity at $Q=100$ (10:30 AM) due to unconstrained decision tree boundary splits
+- [x] High-resolution academic figures generated in [`backend/ml/phase5_figures/`](../backend/ml/phase5_figures/) and [`docs/phase5_figures/`](phase5_figures/)
+- [x] 100% full regression pass: 17 Django tests, 11 ML tests, 15 Frontend tests, and production build

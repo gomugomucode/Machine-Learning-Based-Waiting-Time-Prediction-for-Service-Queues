@@ -1,0 +1,70 @@
+{
+  "Exp_A_Queue_Length_Only": {
+    "features": [
+      "queue_length"
+    ],
+    "num_features": 1,
+    "test_mae": 11.9516,
+    "test_rmse": 16.6025,
+    "test_r2": 0.944236
+  },
+  "Exp_B_Queue_Plus_Opening_Time": {
+    "features": [
+      "queue_length",
+      "minutes_since_opening"
+    ],
+    "num_features": 2,
+    "test_mae": 3.3569,
+    "test_rmse": 5.4714,
+    "test_r2": 0.993944
+  },
+  "Exp_C_All_10_Causal_Features": {
+    "features": [
+      "queue_length",
+      "minutes_since_opening",
+      "hour",
+      "minute",
+      "day_of_week",
+      "sin_time",
+      "cos_time",
+      "lag1_queue_length",
+      "arrivals_last_15m",
+      "arrivals_last_30m"
+    ],
+    "num_features": 10,
+    "test_mae": 0.8935,
+    "test_rmse": 1.7135,
+    "test_r2": 0.999406
+  },
+  "Exp_D_No_Queue_Length": {
+    "features": [
+      "minutes_since_opening",
+      "hour",
+      "minute",
+      "day_of_week",
+      "sin_time",
+      "cos_time",
+      "lag1_queue_length",
+      "arrivals_last_15m",
+      "arrivals_last_30m"
+    ],
+    "num_features": 9,
+    "test_mae": 0.9103,
+    "test_rmse": 1.752,
+    "test_r2": 0.999379
+  },
+  "Exp_E_Only_Temporal_Features": {
+    "features": [
+      "minutes_since_opening",
+      "hour",
+      "minute",
+      "day_of_week",
+      "sin_time",
+      "cos_time"
+    ],
+    "num_features": 6,
+    "test_mae": 13.3095,
+    "test_rmse": 19.6892,
+    "test_r2": 0.921574
+  }
+}
