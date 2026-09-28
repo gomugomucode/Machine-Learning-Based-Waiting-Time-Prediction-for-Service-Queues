@@ -140,7 +140,7 @@ def run_pipeline():
 
     metrics_json_path = artifacts_dir / "model_metrics.json"
     with open(metrics_json_path, "w", encoding="utf-8") as f:
-        json.dump(metrics_payload, f, indent=2)
+        json.dump(metrics_payload, f, indent=2, default=str)
     print(f"Metrics saved to {metrics_json_path}")
 
     print("\n" + "=" * 70)

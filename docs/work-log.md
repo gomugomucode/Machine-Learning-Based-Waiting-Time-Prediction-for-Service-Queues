@@ -290,6 +290,51 @@ In multi-app Django architectures opened at the parent monorepo root, static rel
 * `npm run test`: **5/5 tests passed**.
 * Verified endpoint: `POST /api/predictions/predict/` with `service_type: 1` returned HTTP 200 with `service_type_name: 'Cash Transactions'`.
 
+---
+
+## Entry 010: 2026-09-28 — Phase 2: Dataset Validation & Machine Learning Experiments Completed
+
+### Objective
+Execute Phase 2 according to strict scientific standards: validate the 12,017-record dataset, re-calculate the target independently, establish the Prediction-Time Information Boundary ($t_0 = \text{arrival\_time}$), create causal prediction-time features, implement chronological train/test splitting, establish baseline models, train candidate ML regressors (Linear Regression, Random Forest, Gradient Boosting), evaluate out-of-sample performance, perform slice-based error analysis, and generate diagnostic figures.
+
+### 1. Files Created & Modified
+* **Documentation & Reports:**
+  * [`docs/phase2_dataset_validation.md`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/docs/phase2_dataset_validation.md): 20-point audit covering completeness, distributions, timestamp integrity, and correlations.
+  * [`docs/phase2_leakage_audit.md`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/docs/phase2_leakage_audit.md): Formal boundary audit at $t_0$, allowlist/blocklist, and automated validator.
+  * [`docs/phase2_ml_report.md`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/docs/phase2_ml_report.md): Formal academic report answering all 11 research questions.
+  * [`docs/phase2_figures/`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/docs/phase2_figures): 10 high-resolution diagnostic plots.
+* **Backend Machine Learning Module (`backend/ml/`):**
+  * [`backend/ml/data_loader.py`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/backend/ml/data_loader.py): Dataset loader with strict type casting and date parsing.
+  * [`backend/ml/validation.py`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/backend/ml/validation.py): 20-point validation suite and target discrepancy analyzer.
+  * [`backend/ml/features.py`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/backend/ml/features.py): Causal feature extractor and leakage validator.
+  * [`backend/ml/split.py`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/backend/ml/split.py): Chronological train/test split preserving intact business days.
+  * [`backend/ml/baselines.py`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/backend/ml/baselines.py): Global Mean, Queue Proportional, and Hourly Mean baseline implementations.
+  * [`backend/ml/train.py`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/backend/ml/train.py): Training pipeline with StandardScaler and fixed seeds.
+  * [`backend/ml/evaluate.py`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/backend/ml/evaluate.py): Out-of-sample benchmark evaluation harness.
+  * [`backend/ml/explain.py`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/backend/ml/explain.py): Sliced error analysis and permutation feature importance.
+  * [`backend/ml/plots.py`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/backend/ml/plots.py): Matplotlib figure generation suite.
+  * [`backend/ml/run_experiments.py`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/backend/ml/run_experiments.py): End-to-end reproducible experiment runner.
+  * [`backend/ml/artifacts/best_waiting_time_model.joblib`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/backend/ml/artifacts/best_waiting_time_model.joblib): Serialized best model artifact.
+  * [`backend/ml/artifacts/model_metrics.json`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/backend/ml/artifacts/model_metrics.json): JSON metrics payload.
+* **Test Suite:**
+  * [`backend/ml/tests/test_ml_pipeline.py`](file:///c:/Users/Anupam%20Baral/Desktop/bca%20project/backend/ml/tests/test_ml_pipeline.py): 11 unit & integration tests.
+
+### 2. Empirical Benchmark Results (Test Set: 4,042 records, Week 3)
+| Model | Type | MAE (min) | RMSE (min) | R² |
+| :--- | :--- | :---: | :---: | :---: |
+| **Random Forest Regressor** | **Machine Learning** | **0.9166** | **1.7678** | **0.9994** |
+| Gradient Boosting Regressor | Machine Learning | 2.7864 | 4.1357 | 0.9965 |
+| Linear Regression (Standardized) | Machine Learning | 10.7616 | 14.6183 | 0.9568 |
+| Queue-Aware Proportional Heuristic | Baseline | 12.5694 | 16.7890 | 0.9430 |
+| Hourly Historical Mean | Baseline | 21.2898 | 28.5036 | 0.8356 |
+| Global Historical Mean | Baseline | 57.4948 | 70.3097 | -0.0001 |
+
+### 3. Verification Commands & Status
+* `pytest backend/ml/tests/ -v`: **11/11 tests passed in 1.76s**.
+* `python backend/manage.py test apps`: **8/8 tests passed in 0.99s**.
+* `npm test -- --run`: **5/5 tests passed in 2.17s**.
+
+
 
 
 

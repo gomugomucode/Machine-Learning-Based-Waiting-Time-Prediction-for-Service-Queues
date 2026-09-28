@@ -1,0 +1,235 @@
+{
+  "best_model_name": "Random Forest",
+  "features": [
+    "queue_length",
+    "minutes_since_opening",
+    "hour",
+    "minute",
+    "day_of_week",
+    "sin_time",
+    "cos_time",
+    "lag1_queue_length",
+    "arrivals_last_15m",
+    "arrivals_last_30m"
+  ],
+  "split_metadata": {
+    "total_days": 14,
+    "num_train_days": 10,
+    "num_test_days": 4,
+    "train_dates": [
+      "2026-10-05",
+      "2026-10-06",
+      "2026-10-07",
+      "2026-10-08",
+      "2026-10-09",
+      "2026-10-12",
+      "2026-10-13",
+      "2026-10-14",
+      "2026-10-15",
+      "2026-10-16"
+    ],
+    "test_dates": [
+      "2026-10-19",
+      "2026-10-20",
+      "2026-10-21",
+      "2026-10-22"
+    ],
+    "train_date_range": [
+      "2026-10-05",
+      "2026-10-16"
+    ],
+    "test_date_range": [
+      "2026-10-19",
+      "2026-10-22"
+    ],
+    "train_rows": 7975,
+    "test_rows": 4042,
+    "train_row_pct": 66.36,
+    "test_row_pct": 33.64
+  },
+  "benchmark_results": [
+    {
+      "Model": "Random Forest",
+      "Type": "Machine Learning",
+      "MAE": 0.9166,
+      "RMSE": 1.7678,
+      "R\u00b2": 0.9994
+    },
+    {
+      "Model": "Gradient Boosting",
+      "Type": "Machine Learning",
+      "MAE": 2.7864,
+      "RMSE": 4.1357,
+      "R\u00b2": 0.9965
+    },
+    {
+      "Model": "Linear Regression",
+      "Type": "Machine Learning",
+      "MAE": 10.7616,
+      "RMSE": 14.6183,
+      "R\u00b2": 0.9568
+    },
+    {
+      "Model": "Queue-Aware Proportional Heuristic",
+      "Type": "Baseline",
+      "MAE": 12.5694,
+      "RMSE": 16.789,
+      "R\u00b2": 0.943
+    },
+    {
+      "Model": "Hourly Historical Mean",
+      "Type": "Baseline",
+      "MAE": 21.2898,
+      "RMSE": 28.5036,
+      "R\u00b2": 0.8356
+    },
+    {
+      "Model": "Global Historical Mean",
+      "Type": "Baseline",
+      "MAE": 57.4948,
+      "RMSE": 70.3097,
+      "R\u00b2": -0.0001
+    }
+  ],
+  "best_model_metrics": {
+    "Model": "Random Forest",
+    "Type": "Machine Learning",
+    "MAE": 0.9166,
+    "RMSE": 1.7678,
+    "R\u00b2": 0.9994
+  },
+  "queue_slice_metrics": [
+    {
+      "queue_bin": "Short (<=50)",
+      "Count": 1055,
+      "MAE": 0.7088492492651358,
+      "RMSE": 1.1048416452936893,
+      "Mean_Error": -0.009252314599971268,
+      "Min_Error": -10.91727765735262,
+      "Max_Error": 7.824781397448202
+    },
+    {
+      "queue_bin": "Medium (51-150)",
+      "Count": 1718,
+      "MAE": 0.9484947189088235,
+      "RMSE": 1.5650390012659223,
+      "Mean_Error": -0.15110525884692821,
+      "Min_Error": -16.75389874609226,
+      "Max_Error": 6.595634464421181
+    },
+    {
+      "queue_bin": "Long (>150)",
+      "Count": 1269,
+      "MAE": 1.0460668118865684,
+      "RMSE": 2.371245982494369,
+      "Mean_Error": -0.5935861946647006,
+      "Min_Error": -22.74404212480991,
+      "Max_Error": 4.795104886779825
+    }
+  ],
+  "time_slice_metrics": [
+    {
+      "time_period": "Afternoon (14:00-17:00)",
+      "Count": 1471,
+      "MAE": 1.1480813714560965,
+      "RMSE": 2.481030064537795,
+      "Mean_Error": -0.6737415104066302
+    },
+    {
+      "time_period": "Midday (12:00-13:59)",
+      "Count": 989,
+      "MAE": 0.9352755495997511,
+      "RMSE": 1.332247932052769,
+      "Mean_Error": 0.018728788781361257
+    },
+    {
+      "time_period": "Morning (09:00-11:59)",
+      "Count": 1582,
+      "MAE": 0.6896292372806957,
+      "RMSE": 1.072886419541153,
+      "Mean_Error": -0.031649758488059856
+    }
+  ],
+  "date_slice_metrics": [
+    {
+      "date": "2026-10-19",
+      "Count": 1000,
+      "MAE": 1.2113007260138617,
+      "RMSE": 2.6266687456301887,
+      "Mean_Error": -0.7076196282088428
+    },
+    {
+      "date": "2026-10-20",
+      "Count": 990,
+      "MAE": 1.0227157479404432,
+      "RMSE": 1.8103411912192657,
+      "Mean_Error": -0.47627697871341895
+    },
+    {
+      "date": "2026-10-21",
+      "Count": 1001,
+      "MAE": 0.6546804726749704,
+      "RMSE": 0.9780012270814102,
+      "Mean_Error": 0.19832623029089416
+    },
+    {
+      "date": "2026-10-22",
+      "Count": 1051,
+      "MAE": 0.7856176971661147,
+      "RMSE": 1.2064446877394877,
+      "Mean_Error": -0.0399730038226022
+    }
+  ],
+  "feature_importance": [
+    {
+      "Feature": "queue_length",
+      "Permutation_Importance_Mean": 0.5694590493418537,
+      "Permutation_Importance_Std": 0.010623302633705952
+    },
+    {
+      "Feature": "lag1_queue_length",
+      "Permutation_Importance_Mean": 0.2344850412716366,
+      "Permutation_Importance_Std": 0.0045025656408267485
+    },
+    {
+      "Feature": "minutes_since_opening",
+      "Permutation_Importance_Mean": 0.05142967731875327,
+      "Permutation_Importance_Std": 0.0011170723642769918
+    },
+    {
+      "Feature": "day_of_week",
+      "Permutation_Importance_Mean": 0.023457917793246175,
+      "Permutation_Importance_Std": 0.0006412043063565906
+    },
+    {
+      "Feature": "cos_time",
+      "Permutation_Importance_Mean": 0.023242695407280956,
+      "Permutation_Importance_Std": 0.0007951958023990412
+    },
+    {
+      "Feature": "sin_time",
+      "Permutation_Importance_Mean": 0.012634539272967316,
+      "Permutation_Importance_Std": 0.00032779894980673806
+    },
+    {
+      "Feature": "arrivals_last_30m",
+      "Permutation_Importance_Mean": 0.009817737767479772,
+      "Permutation_Importance_Std": 0.0002657704964361322
+    },
+    {
+      "Feature": "arrivals_last_15m",
+      "Permutation_Importance_Mean": 0.0017913634870370676,
+      "Permutation_Importance_Std": 9.691315702721775e-05
+    },
+    {
+      "Feature": "minute",
+      "Permutation_Importance_Mean": 0.0005910723078083269,
+      "Permutation_Importance_Std": 2.2912616031473866e-05
+    },
+    {
+      "Feature": "hour",
+      "Permutation_Importance_Mean": 2.647546835427006e-05,
+      "Permutation_Importance_Std": 2.4276288480375366e-06
+    }
+  ]
+}
